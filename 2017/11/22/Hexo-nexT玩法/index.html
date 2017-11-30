@@ -81,19 +81,19 @@
 
 
 
-<meta name="description" content="基础篇1. 常用命令123456hexo new &amp;quot;HelloWorld&amp;quot; #新建文章hexo n &amp;quot;我的博客&amp;quot; == hexo new &amp;quot;我的博客&amp;quot; #新建文章hexo p == hexo publishhex">
+<meta name="description" content="基础篇1. 常用命令12345678hexo new &amp;quot;HelloWorld&amp;quot; #新建文章hexo new page &amp;quot;pageName&amp;quot; #新建页面hexo n &amp;quot;我的博客&amp;quot; == hexo new &amp;">
 <meta name="keywords" content="Hexo,next">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hexo nexT的一些玩法（转载+总结）">
 <meta property="og:url" content="CherryKeinz.github.io/2017/11/22/Hexo-nexT玩法/index.html">
 <meta property="og:site_name" content="一切都是石头门的选择">
-<meta property="og:description" content="基础篇1. 常用命令123456hexo new &amp;quot;HelloWorld&amp;quot; #新建文章hexo n &amp;quot;我的博客&amp;quot; == hexo new &amp;quot;我的博客&amp;quot; #新建文章hexo p == hexo publishhexo g == hexo generate #生成hexo s == hexo server #启动服务预览hexo d == h">
+<meta property="og:description" content="基础篇1. 常用命令12345678hexo new &amp;quot;HelloWorld&amp;quot; #新建文章hexo new page &amp;quot;pageName&amp;quot; #新建页面hexo n &amp;quot;我的博客&amp;quot; == hexo new &amp;quot;我的博客&amp;quot; #新建文章hexo p == hexo publishhexo g == hexo generate #">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="/image/blog1.png">
-<meta property="og:updated_time" content="2017-11-30T04:13:16.193Z">
+<meta property="og:updated_time" content="2017-11-30T04:17:14.685Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hexo nexT的一些玩法（转载+总结）">
-<meta name="twitter:description" content="基础篇1. 常用命令123456hexo new &amp;quot;HelloWorld&amp;quot; #新建文章hexo n &amp;quot;我的博客&amp;quot; == hexo new &amp;quot;我的博客&amp;quot; #新建文章hexo p == hexo publishhexo g == hexo generate #生成hexo s == hexo server #启动服务预览hexo d == h">
+<meta name="twitter:description" content="基础篇1. 常用命令12345678hexo new &amp;quot;HelloWorld&amp;quot; #新建文章hexo new page &amp;quot;pageName&amp;quot; #新建页面hexo n &amp;quot;我的博客&amp;quot; == hexo new &amp;quot;我的博客&amp;quot; #新建文章hexo p == hexo publishhexo g == hexo generate #">
 <meta name="twitter:image" content="/image/blog1.png">
 
 
@@ -390,7 +390,7 @@
       
 
       
-        <h2 id="基础篇"><a href="#基础篇" class="headerlink" title="基础篇"></a>基础篇</h2><h3 id="1-常用命令"><a href="#1-常用命令" class="headerlink" title="1. 常用命令"></a>1. 常用命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hexo new &quot;HelloWorld&quot; #新建文章</span><br><span class="line">hexo n &quot;我的博客&quot; == hexo new &quot;我的博客&quot; #新建文章</span><br><span class="line">hexo p == hexo publish</span><br><span class="line">hexo g == hexo generate #生成</span><br><span class="line">hexo s == hexo server #启动服务预览</span><br><span class="line">hexo d == hexo deploy #部署</span><br></pre></td></tr></table></figure>
+        <h2 id="基础篇"><a href="#基础篇" class="headerlink" title="基础篇"></a>基础篇</h2><h3 id="1-常用命令"><a href="#1-常用命令" class="headerlink" title="1. 常用命令"></a>1. 常用命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">hexo new &quot;HelloWorld&quot; #新建文章</span><br><span class="line">hexo new page &quot;pageName&quot; #新建页面</span><br><span class="line">hexo n &quot;我的博客&quot; == hexo new &quot;我的博客&quot; #新建文章</span><br><span class="line">hexo p == hexo publish</span><br><span class="line">hexo g == hexo generate #生成</span><br><span class="line">hexo s == hexo server #启动服务预览</span><br><span class="line">hexo d == hexo deploy #部署</span><br><span class="line">hexo d #部署 #可与hexo g合并为 hexo d -g</span><br></pre></td></tr></table></figure>
 <h3 id="2-文章中插入图片"><a href="#2-文章中插入图片" class="headerlink" title="2. 文章中插入图片"></a>2. 文章中插入图片</h3><p>对于hexo，有两种方式：<br>使用本地路径：在hexo/source目录下新建一个img文件夹，将图片放入该文件夹下，插入图片时链接即为/img/图片名称。<br>使用微博图床，地址 <a href="http://weibotuchuang.sinaapp.com/" target="_blank" rel="noopener">http://weibotuchuang.sinaapp.com/</a> ，将图片拖入区域中，会生成图片的URL，这就是链接地址。</p>
 <h3 id="3-添加分页、标签页面"><a href="#3-添加分页、标签页面" class="headerlink" title="3. 添加分页、标签页面"></a>3. 添加分页、标签页面</h3><ul>
 <li>新建<br>命令：</li>
