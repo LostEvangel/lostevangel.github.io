@@ -70,7 +70,7 @@
 
 
 
-  <meta name="keywords" content="Java,," />
+  <meta name="keywords" content="Python," />
 
 
 
@@ -81,18 +81,18 @@
 
 
 
-<meta name="description" content="Lambda序列化问题这几天用spark遇到一个问题，到现在仍没有解决，不过查到了一些思路，可能与序列化有关。 先上代码1234567891011//不用Lambda，没有问题lines.mapToPair(new PairFunction&amp;lt;String, Integer, Integer&amp;gt;">
-<meta name="keywords" content="Java,">
+<meta name="description" content="微信跳一跳Python脚本adb+python 代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717">
+<meta name="keywords" content="Python">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Lambda序列化问题">
-<meta property="og:url" content="CherryKeinz.github.io/2017/12/12/Lambda序列化问题/index.html">
+<meta property="og:title" content="微信跳一跳Python脚本">
+<meta property="og:url" content="CherryKeinz.github.io/2018/01/09/微信跳一跳python脚本/index.html">
 <meta property="og:site_name" content="Echo">
-<meta property="og:description" content="Lambda序列化问题这几天用spark遇到一个问题，到现在仍没有解决，不过查到了一些思路，可能与序列化有关。 先上代码1234567891011//不用Lambda，没有问题lines.mapToPair(new PairFunction&amp;lt;String, Integer, Integer&amp;gt;() &amp;#123;			private static final long serialVers">
+<meta property="og:description" content="微信跳一跳Python脚本adb+python 代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-12-16T15:36:39.074Z">
+<meta property="og:updated_time" content="2018-01-09T12:00:07.904Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Lambda序列化问题">
-<meta name="twitter:description" content="Lambda序列化问题这几天用spark遇到一个问题，到现在仍没有解决，不过查到了一些思路，可能与序列化有关。 先上代码1234567891011//不用Lambda，没有问题lines.mapToPair(new PairFunction&amp;lt;String, Integer, Integer&amp;gt;() &amp;#123;			private static final long serialVers">
+<meta name="twitter:title" content="微信跳一跳Python脚本">
+<meta name="twitter:description" content="微信跳一跳Python脚本adb+python 代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919">
 
 
 
@@ -122,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="CherryKeinz.github.io/2017/12/12/Lambda序列化问题/"/>
+  <link rel="canonical" href="CherryKeinz.github.io/2018/01/09/微信跳一跳python脚本/"/>
 
 
 
 
 
-  <title>Lambda序列化问题 | Echo</title>
+  <title>微信跳一跳Python脚本 | Echo</title>
   
 
 
@@ -299,7 +299,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="CherryKeinz.github.io/2017/12/12/Lambda序列化问题/">
+    <link itemprop="mainEntityOfPage" href="CherryKeinz.github.io/2018/01/09/微信跳一跳python脚本/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Keinz">
@@ -316,7 +316,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Lambda序列化问题</h1>
+          <h1 class="post-title" itemprop="name headline">微信跳一跳Python脚本</h1>
         
 
         <div class="post-meta">
@@ -328,8 +328,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-12T16:05:58+08:00">
-                2017-12-12
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-09T19:57:19+08:00">
+                2018-01-09
               </time>
             
 
@@ -351,8 +351,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Lambda表达式/" itemprop="url" rel="index">
-                    <span itemprop="name">Lambda表达式</span>
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
                   </a>
                 </span>
 
@@ -388,14 +388,8 @@
       
 
       
-        <h1 id="Lambda序列化问题"><a href="#Lambda序列化问题" class="headerlink" title="Lambda序列化问题"></a>Lambda序列化问题</h1><p>这几天用spark遇到一个问题，到现在仍没有解决，不过查到了一些思路，可能与序列化有关。</p>
-<h3 id="先上代码"><a href="#先上代码" class="headerlink" title="先上代码"></a>先上代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//不用Lambda，没有问题</span><br><span class="line">lines.mapToPair(new PairFunction&lt;String, Integer, Integer&gt;() &#123;</span><br><span class="line">			private static final long serialVersionUID = 1323L;</span><br><span class="line"></span><br><span class="line">			@Override</span><br><span class="line">			public Tuple2&lt;Integer, Integer&gt; call(String word) throws Exception &#123;</span><br><span class="line">				return new Tuple2&lt;Integer, Integer&gt;(1, 1);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;).take(200).forEach(v -&gt; System.out.println(v));</span><br><span class="line">//用lambda，报错</span><br><span class="line">lines.mapToPair(v -&gt; new Tuple2&lt;Integer, Integer&gt;(1, 1)).take(200).forEach(v -&gt; System.out.println(v));</span><br></pre></td></tr></table></figure>
-<h3 id="错误信息："><a href="#错误信息：" class="headerlink" title="错误信息："></a>错误信息：</h3><blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">17/12/12 16:00:53 WARN TaskSetManager: Lost task 0.0 in stage 1.0 (TID 1, 10.103.244.216): java.io.IOException: unexpected exception type</span><br><span class="line">	at java.io.ObjectStreamClass.throwMiscException(ObjectStreamClass.java:1582)</span><br><span class="line">	at java.io.ObjectStreamClass.invokeReadResolve(ObjectStreamClass.java:1154)</span><br><span class="line">	at java.io.ObjectInputStream.readOrdinaryObject(ObjectInputStream.java:2022)</span><br><span class="line">	at java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1535)</span><br><span class="line">	at java.io.ObjectInputStream.defaultReadFields(ObjectInputStream.java:2231)</span><br><span class="line">	at java.io.ObjectInputStream.readSerialData(ObjectInputStream.java:2155)</span><br><span class="line">	at java.io.ObjectInputStream.readOrdinaryObject(ObjectInputStream.java:2013)</span><br><span class="line">	at java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1535)</span><br><span class="line">	at java.io.ObjectInputStream.defaultReadFields(ObjectInputStream.java:2231)</span><br><span class="line">	at java.io.ObjectInputStream.readSerialData(ObjectInputStream.java:2155)</span><br><span class="line">	at java.io.ObjectInputStream.readOrdinaryObject(ObjectInputStream.java:2013)</span><br><span class="line">	at java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1535)</span><br><span class="line">	at java.io.ObjectInputStream.defaultReadFields(ObjectInputStream.java:2231)</span><br><span class="line">	at java.io.ObjectInputStream.readSerialData(ObjectInputStream.java:2155)</span><br><span class="line">	at java.io.ObjectInputStream.readOrdinaryObject(ObjectInputStream.java:2013)</span><br><span class="line">	at java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1535)</span><br><span class="line">	at java.io.ObjectInputStream.defaultReadFields(ObjectInputStream.java:2231)</span><br><span class="line">	at java.io.ObjectInputStream.readSerialData(ObjectInputStream.java:2155)</span><br><span class="line">	at java.io.ObjectInputStream.readOrdinaryObject(ObjectInputStream.java:2013)</span><br><span class="line">	at java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1535)</span><br><span class="line">	at java.io.ObjectInputStream.readObject(ObjectInputStream.java:422)</span><br><span class="line">	at org.apache.spark.serializer.JavaDeserializationStream.readObject(JavaSerializer.scala:76)</span><br><span class="line">	at org.apache.spark.serializer.JavaSerializerInstance.deserialize(JavaSerializer.scala:115)</span><br><span class="line">	at org.apache.spark.scheduler.ResultTask.runTask(ResultTask.scala:61)</span><br><span class="line">	at org.apache.spark.scheduler.Task.run(Task.scala:89)</span><br><span class="line">	at org.apache.spark.executor.Executor$TaskRunner.run(Executor.scala:213)</span><br><span class="line">	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)</span><br><span class="line">	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)</span><br><span class="line">	at java.lang.Thread.run(Thread.java:745)</span><br><span class="line">Caused by: java.lang.NoSuchMethodException: TestSUANZI.test.$deserializeLambda$(java.lang.invoke.SerializedLambda)</span><br><span class="line">	at java.lang.Class.getDeclaredMethod(Class.java:2130)</span><br><span class="line">	at java.lang.invoke.SerializedLambda$1.run(SerializedLambda.java:224)</span><br><span class="line">	at java.lang.invoke.SerializedLambda$1.run(SerializedLambda.java:221)</span><br><span class="line">	at java.security.AccessController.doPrivileged(Native Method)</span><br><span class="line">	at java.lang.invoke.SerializedLambda.readResolve(SerializedLambda.java:221)</span><br><span class="line">	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">	at java.lang.reflect.Method.invoke(Method.java:498)</span><br><span class="line">	at java.io.ObjectStreamClass.invokeReadResolve(ObjectStreamClass.java:1148)</span><br><span class="line">	... 27 more</span><br><span class="line"></span><br><span class="line">17/12/12 16:00:53 INFO TaskSetManager: Starting task 0.1 in stage 1.0 (TID 2, 10.103.244.216, partition 0,ANY, 2193 bytes)</span><br><span class="line">17/12/12 16:00:53 INFO TaskSetManager: Lost task 0.1 in stage 1.0 (TID 2) on executor 10.103.244.216: java.io.IOException (unexpected exception type) [duplicate 1]</span><br><span class="line">17/12/12 16:00:53 INFO TaskSetManager: Starting task 0.2 in stage 1.0 (TID 3, 10.103.244.216, partition 0,ANY, 2193 bytes)</span><br><span class="line">17/12/12 16:00:53 INFO TaskSetManager: Lost task 0.2 in stage 1.0 (TID 3) on executor 10.103.244.216: java.io.IOException (unexpected exception type) [duplicate 2]</span><br><span class="line">17/12/12 16:00:53 INFO TaskSetManager: Starting task 0.3 in stage 1.0 (TID 4, 10.103.244.216, partition 0,ANY, 2193 bytes)</span><br><span class="line">17/12/12 16:00:53 INFO TaskSetManager: Lost task 0.3 in stage 1.0 (TID 4) on executor 10.103.244.216: java.io.IOException (unexpected exception type) [duplicate 3]</span><br><span class="line">17/12/12 16:00:53 ERROR TaskSetManager: Task 0 in stage 1.0 failed 4 times; aborting job</span><br></pre></td></tr></table></figure>
-</blockquote>
-<p>目前的解决方法是实现Serializable这个接口。</p>
-<p>有时间读一下<br><a href="https://www.zhihu.com/question/51491241/answer/126232275" target="_blank" rel="noopener">https://www.zhihu.com/question/51491241/answer/126232275</a></p>
-
+        <h1 id="微信跳一跳Python脚本"><a href="#微信跳一跳Python脚本" class="headerlink" title="微信跳一跳Python脚本"></a>微信跳一跳Python脚本</h1><p>adb+python</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line">import time</span><br><span class="line">from PIL import Image</span><br><span class="line">import os</span><br><span class="line">import math</span><br><span class="line"></span><br><span class="line">def isPixFuzzyDiff(r,g,b,pix):</span><br><span class="line">    if abs(r - pix[0]) &lt; 10 and abs(g - pix[1]) &lt; 10 and abs(b - pix[2]) &lt; 10:</span><br><span class="line">        return False</span><br><span class="line">    else:</span><br><span class="line">        return True</span><br><span class="line">def isPixAccurateDiff(r,g,b,pix):</span><br><span class="line">    if abs(r - pix[0]) &lt; 1 and abs(g - pix[1]) &lt; 1 and abs(b - pix[2]) &lt; 1:</span><br><span class="line">        return False</span><br><span class="line">    else:</span><br><span class="line">        return True</span><br><span class="line">def isWhiteCenter(pix):</span><br><span class="line">    if pix[0] == 245 and pix[1] == 245 and pix[2] ==245:</span><br><span class="line">        return True</span><br><span class="line">    else:</span><br><span class="line">        return False</span><br><span class="line">    </span><br><span class="line">def getDistance(dep,des):</span><br><span class="line">    if des[0] &gt; dep[0]:</span><br><span class="line">        x1,x2 = des[0],dep[0]</span><br><span class="line">    else:</span><br><span class="line">        x2,x1 = des[0],dep[0]</span><br><span class="line">    x = (x1 - x2)</span><br><span class="line">    y = (dep[1] - des[1])/2</span><br><span class="line">    dis = (x**2+y**2)**0.5</span><br><span class="line">    return dis</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def getTopPixel(pix,height,width,depPix):</span><br><span class="line">    topPixel = [0,0]</span><br><span class="line">    if depPix[0] &lt; width/2:</span><br><span class="line">        startpoint = depPix[0] + 40</span><br><span class="line">        endpoint = width - 2</span><br><span class="line">    else:</span><br><span class="line">        startpoint = 40</span><br><span class="line">        endpoint = depPix[0] - 40</span><br><span class="line">    deltaX = x0 = 0</span><br><span class="line">    flag = False</span><br><span class="line">    for y in range(int(0.18 * height),int(0.66 * height)):</span><br><span class="line">        for x in range(startpoint,endpoint):</span><br><span class="line">            if x == startpoint:           </span><br><span class="line">                r, g, b = pix[x, y][0:3]</span><br><span class="line">            elif isPixFuzzyDiff(r,g,b,pix[x,y]):   </span><br><span class="line">                r, g, b = pix[x, y][0:3]</span><br><span class="line">                flag = not flag</span><br><span class="line">                if not flag:</span><br><span class="line">                    break</span><br><span class="line">                x0 = x</span><br><span class="line">            elif flag :                </span><br><span class="line">                deltaX += 1 </span><br><span class="line">        else:</span><br><span class="line">            continue</span><br><span class="line">        break</span><br><span class="line">    print deltaX</span><br><span class="line">    topPixel = [x0 + math.floor(deltaX)/2,y]</span><br><span class="line">    return topPixel</span><br><span class="line"># button == buttom 懒得改</span><br><span class="line">def getButtonPixel(topPixel,pix):</span><br><span class="line">    buttonPixel = [topPixel[0],0]</span><br><span class="line">    r, g, b = pix[topPixel[0],topPixel[1]][0:3]</span><br><span class="line">    for y in range(topPixel[1],topPixel[1] + 250):</span><br><span class="line">        if not isPixAccurateDiff(r,g,b,pix[topPixel[0],y]):</span><br><span class="line">            buttonPixel[1] = y          </span><br><span class="line">    return buttonPixel</span><br><span class="line"></span><br><span class="line">def getdepPix(pix,height,width):</span><br><span class="line">    depPix = [0,0]</span><br><span class="line">    for y in range(1388,200,-1):</span><br><span class="line">        for x in range(2,width-2):</span><br><span class="line">            if isPixAccurateDiff(54,60,102,pix[x,y]):</span><br><span class="line">                continue</span><br><span class="line">            else:</span><br><span class="line">                depPix = [x,y]</span><br><span class="line">                break</span><br><span class="line">        else:</span><br><span class="line">            continue</span><br><span class="line">        break</span><br><span class="line">    return depPix</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    for i in range(20):</span><br><span class="line">        filename = str(int(time.time())) + &apos;.png&apos;</span><br><span class="line">        time.sleep(2)</span><br><span class="line">        print &quot;filename: &quot; + filename</span><br><span class="line">        time.sleep(2)</span><br><span class="line">        os.system(&apos;adb shell /system/bin/screencap -p /sdcard/jump/&apos; + filename)    </span><br><span class="line">        print &quot;screencap&quot;</span><br><span class="line">        time.sleep(2)</span><br><span class="line">        os.system(&apos;adb pull /sdcard/jump/&apos; + filename + &apos; d:/MyCode/Python/jump/&apos; + filename)</span><br><span class="line">        print &quot;pull&quot;</span><br><span class="line"></span><br><span class="line">##        filename = &apos;1515321961&apos; + &apos;.png&apos;</span><br><span class="line">        im = Image.open(filename)</span><br><span class="line">        pix = im.load()</span><br><span class="line">        width = im.size[0]</span><br><span class="line">        height = im.size[1]</span><br><span class="line">        depPix = getdepPix(pix,height,width)</span><br><span class="line">        </span><br><span class="line">        topPixel = getTopPixel(pix,height,width,depPix)</span><br><span class="line">        buttonPixel = getButtonPixel(topPixel,pix)</span><br><span class="line">        desPix = [topPixel[0],(buttonPixel[1] - topPixel[1])/2 + topPixel[1]]</span><br><span class="line">        print topPixel</span><br><span class="line">        print buttonPixel</span><br><span class="line">        print desPix</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        print depPix</span><br><span class="line">        </span><br><span class="line">        dis =  getDistance(depPix,desPix)</span><br><span class="line">        print &quot;distance: &quot; + str(dis)</span><br><span class="line">        swipeTime = 722/475.1 * dis </span><br><span class="line">        print &quot;swipeTime:&quot; + str(swipeTime)</span><br><span class="line">        os.system(&quot;adb shell input swipe 250 250 300 300  &quot; + str(int(swipeTime)))</span><br><span class="line">    </span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    main()</span><br><span class="line">#im.save(&apos;demo.jpg&apos;)</span><br><span class="line"># 706 736  0.634382</span><br></pre></td></tr></table></figure>
       
     </div>
     
@@ -421,7 +415,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java,</a>
+            <a href="/tags/Python/" rel="tag"><i class="fa fa-tag"></i> Python</a>
           
         </div>
       
@@ -434,8 +428,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/11/30/ScrapyDemo/" rel="next" title="ScrapyDemo">
-                <i class="fa fa-chevron-left"></i> ScrapyDemo
+              <a href="/2017/12/12/Lambda序列化问题/" rel="next" title="Lambda序列化问题">
+                <i class="fa fa-chevron-left"></i> Lambda序列化问题
               </a>
             
           </div>
@@ -443,10 +437,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/01/09/微信跳一跳python脚本/" rel="prev" title="微信跳一跳Python脚本">
-                微信跳一跳Python脚本 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -629,7 +619,7 @@ var jiathis_config={
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lambda序列化问题"><span class="nav-number">1.</span> <span class="nav-text">Lambda序列化问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#先上代码"><span class="nav-number">1.0.1.</span> <span class="nav-text">先上代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#错误信息："><span class="nav-number">1.0.2.</span> <span class="nav-text">错误信息：</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#微信跳一跳Python脚本"><span class="nav-number">1.</span> <span class="nav-text">微信跳一跳Python脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#代码"><span class="nav-number">1.0.1.</span> <span class="nav-text">代码</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
