@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[文件夹中右键打开命令行窗口]]></title>
+    <url>%2F2018%2F07%2F20%2F%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%AD%E5%8F%B3%E9%94%AE%E6%89%93%E5%BC%80%E5%91%BD%E4%BB%A4%E8%A1%8C%E7%AA%97%E5%8F%A3%2F</url>
+    <content type="text"><![CDATA[将“在此处打开命令窗口”添加到右键菜单（转载）注册表编辑器中 \HKEY_CLASSES_ROOT\Directory\shell\ \HKEY_CLASSES_ROOT\Directory\Background\shell\ \HKEY_CLASSES_ROOT\Drive\shell\ \HKEY_CLASSES_ROOT\LibraryFolder\background\（要新建shell项） 上述项中每个都执行的步骤： 放在\shell\上，右键，选择新建-项：OpenCmdHere 进入OpenCmdHere，修改值为OpenCmdHere 选择新建-字符串值：Icon \OpenCmdHere，新建-项：command 进入command，修改值为： 1Powershell -windowstyle hidden -Command &quot;Start-Process cmd.exe -ArgumentList &apos;/s,/k, pushd,%V&apos; -Verb RunAs&quot;]]></content>
+      <categories>
+        <category>Windows tips</category>
+      </categories>
+      <tags>
+        <tag>tips</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[搭建ShadowSocks]]></title>
     <url>%2F2018%2F06%2F26%2F%E6%90%AD%E5%BB%BAShadowSocks%2F</url>
     <content type="text"><![CDATA[搭建ShadowSocks客户端下载https://shadowsocks.org/en/download/clients.html ss的配制与使用 检查Python版本 1$ python –version 安装m2crypto和python-setuptools 1$ yum install m2crypto python-setuptools 安装pip 1yum -y install python-pip 或者（没试过）1$ easy_install pip 安装ss 1$ pip shadowsocks 配置服务器参数 1$ vi /etc/shadowsocks.json 12345678910&#123; &quot;server&quot;:&quot;my_server_ip&quot;, //服务器的IP地址 &quot;server_port&quot;:7711, //服务器的端口 &quot;local_address&quot;: &quot;127.0.0.1&quot;, //本机IP地址 &quot;local_port&quot;:1080, //本机端口 &quot;password&quot;:&quot;mypassword&quot;, //自己设定的密码 &quot;timeout&quot;:300, //超出时间 &quot;method&quot;:&quot;aes-256-cfb&quot;, //加密方法，推荐使用&quot;aes-256-cfb&quot; &quot;fast_open&quot;: false //true 或 false&#125;&#125; 若是多用户模式，将server_port和password合并为port_password： 1234&quot;port_password&quot;: &#123; &quot;443&quot;: &quot; mypassword 1”, //对应端口设定不同的密码 &quot;8888&quot;: &quot; mypassword 2” &#125;, 安装gevent Gevent可以提高ss性能，由于gevent依赖于libevent和greenlet 123$ yum install -y libevent$ pip install greenlet$ pip install gevent 配置防火墙 为了提高系统的安全性，需要安装防火墙 1$ yum install firewalld 启动防火墙 1$ systemctl start firewalld 开启相应端口 12$ firewall-cmd --permanent --zone=public --add-port=443/tcp$ firewall-cmd –reload 查看修改ss服务器的端口密码 查看当前ss服务器所开放的端口 1ss -lntp | grep ssserver 查看当前ss服务器的密码，通过以下命令可见ss的配置文件，配置文件中自然有密码 1ps aux | grep ssserver 用cat查看下配置文件即可看见密码了，vim修改 1vim /etc/shadowsocks.json ss启动停止方法 启动，停止，重启，状态：1234567service shadowsocks startservice shadowsocks stopservice shadowsocks restartservice shadowsocks status 参考：https://github.com/easonhuang123/blog/issues/1https://blog.whsir.com/post-1045.html]]></content>
