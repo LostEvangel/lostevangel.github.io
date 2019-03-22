@@ -8,7 +8,9 @@
         <category>面试</category>
       </categories>
       <tags>
-        <tag>数据库，索引,面试</tag>
+        <tag>数据库</tag>
+        <tag>索引</tag>
+        <tag>面试</tag>
       </tags>
   </entry>
   <entry>
@@ -19,7 +21,9 @@
         <category>面试</category>
       </categories>
       <tags>
-        <tag>数据库，范式,面试</tag>
+        <tag>数据库</tag>
+        <tag>面试</tag>
+        <tag>范式</tag>
       </tags>
   </entry>
   <entry>
@@ -30,7 +34,8 @@
         <category>算法题，面试</category>
       </categories>
       <tags>
-        <tag>刷题,面试</tag>
+        <tag>面试</tag>
+        <tag>刷题</tag>
       </tags>
   </entry>
   <entry>
