@@ -83,7 +83,7 @@
 
 
 
-  <meta name="keywords" content="keinz" />
+  <meta name="keywords" content="数据库，索引,面试," />
 
 
 
@@ -94,16 +94,18 @@
 
 
 
-<meta name="description" content="Java |Python |el psy congroo">
-<meta property="og:type" content="website">
-<meta property="og:title" content="都是石头门的选择">
-<meta property="og:url" content="CherryKeinz.github.io/tags/刷题/index.html">
+<meta name="description" content="数据库索引总结 数据库索引索引通常是由B树或者B+树实现。 B树和B+树的区别 B树的键和值也存在内部节点和叶子结点中，B+树内部结点只存键，叶子结点存键和值。 B+树的叶子结点有一条链相连。  B树的好处B树在内部存键值，频繁访问的节点在根节点附近可以提高查询效率，如果特定数据是重复读取，B树更好。 B+树的好处一次">
+<meta name="keywords" content="数据库，索引,面试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库索引总结">
+<meta property="og:url" content="CherryKeinz.github.io/2019/03/22/数据库索引/index.html">
 <meta property="og:site_name" content="都是石头门的选择">
-<meta property="og:description" content="Java |Python |el psy congroo">
+<meta property="og:description" content="数据库索引总结 数据库索引索引通常是由B树或者B+树实现。 B树和B+树的区别 B树的键和值也存在内部节点和叶子结点中，B+树内部结点只存键，叶子结点存键和值。 B+树的叶子结点有一条链相连。  B树的好处B树在内部存键值，频繁访问的节点在根节点附近可以提高查询效率，如果特定数据是重复读取，B树更好。 B+树的好处一次读取大量数据时，因为B+树内部节点只存键，因此可以读取更多键，又因为叶子节点有链">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-22T01:55:31.440Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="都是石头门的选择">
-<meta name="twitter:description" content="Java |Python |el psy congroo">
+<meta name="twitter:title" content="数据库索引总结">
+<meta name="twitter:description" content="数据库索引总结 数据库索引索引通常是由B树或者B+树实现。 B树和B+树的区别 B树的键和值也存在内部节点和叶子结点中，B+树内部结点只存键，叶子结点存键和值。 B+树的叶子结点有一条链相连。  B树的好处B树在内部存键值，频繁访问的节点在根节点附近可以提高查询效率，如果特定数据是重复读取，B树更好。 B+树的好处一次读取大量数据时，因为B+树内部节点只存键，因此可以读取更多键，又因为叶子节点有链">
 
 
 
@@ -133,13 +135,13 @@
 
 
 
-  <link rel="canonical" href="CherryKeinz.github.io/tags/刷题/"/>
+  <link rel="canonical" href="CherryKeinz.github.io/2019/03/22/数据库索引/"/>
 
 
 
 
 
-  <title>标签: 刷题, | 都是石头门的选择</title>
+  <title>数据库索引总结 | 都是石头门的选择</title>
   
 
 
@@ -158,7 +160,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -296,54 +298,273 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>刷题,<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="CherryKeinz.github.io/2019/03/22/数据库索引/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Keinz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/avatar/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="都是石头门的选择">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2019/03/21/剑指offer算法题/" itemprop="url">
-              
-                <span itemprop="name">剑指offer算法题</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">数据库索引总结</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-03-21T21:55:35+08:00"
-              content="2019-03-21" >
-          03-21
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-22T09:55:13+08:00">
+                2019-03-22
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/面试/" itemprop="url" rel="index">
+                    <span itemprop="name">面试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="数据库索引总结"><a href="#数据库索引总结" class="headerlink" title="数据库索引总结"></a>数据库索引总结</h1><hr>
+<h2 id="数据库索引"><a href="#数据库索引" class="headerlink" title="数据库索引"></a>数据库索引</h2><p>索引通常是由B树或者B+树实现。</p>
+<h3 id="B树和B-树的区别"><a href="#B树和B-树的区别" class="headerlink" title="B树和B+树的区别"></a>B树和B+树的区别</h3><ul>
+<li>B树的键和值也存在内部节点和叶子结点中，B+树内部结点只存键，叶子结点存键和值。</li>
+<li>B+树的叶子结点有一条链相连。</li>
+</ul>
+<h5 id="B树的好处"><a href="#B树的好处" class="headerlink" title="B树的好处"></a>B树的好处</h5><p>B树在内部存键值，频繁访问的节点在根节点附近可以提高查询效率，如果特定数据是重复读取，B树更好。</p>
+<h5 id="B-树的好处"><a href="#B-树的好处" class="headerlink" title="B+树的好处"></a>B+树的好处</h5><p>一次读取大量数据时，因为B+树内部节点只存键，因此可以读取更多键，又因为叶子节点有链，读取大量数据时不需要每次都遍历内部节点。</p>
+<h3 id="数据库使用B-还不是B"><a href="#数据库使用B-还不是B" class="headerlink" title="数据库使用B+还不是B"></a>数据库使用B+还不是B</h3><p><strong>B树只适合随机检索，B+树同时适合随机检索和顺序检索。</strong></p>
+<p><strong>B+树空间利用率更高，I/O次数少，磁盘读写少。</strong><br>索引也很大，需要以文件的形式存在磁盘中。索引查找就会产生I/O操作。B+树可以一次读取更多的关键字，因此I/O次数少。</p>
+<p><strong>B+树查询效率更稳定。</strong><br>B树关键字在内部节点中也有，找到关键字就能确定记录。性能代价相当于二分查找。<br>B+树每次都是跟到叶节点，效率更稳定。</p>
+<p><strong>B+树顺序遍历效率也不低。</strong><br>B+树叶子结点有链。</p>
+<h3 id="索引类型"><a href="#索引类型" class="headerlink" title="索引类型"></a>索引类型</h3><ul>
+<li>主键索引：数据列不允许重复，不允许为null，一个表只能有一个主键索引。</li>
+<li>唯一索引：数据列不允许重复，允许为null，一个表允许多个列创建唯一索引。</li>
+<li>普通索引：没有唯一性限制，可以为空。</li>
+<li>全文索引：主要用来查找文本中的关键字，而不是直接与索引中的值相比较。</li>
+<li>联合索引：可以多个列共同创建联合索引。一个查询可以使用其中一个列，但必须遵守最左前缀原则。</li>
+</ul>
+<h3 id="聚集索与非聚集索"><a href="#聚集索与非聚集索" class="headerlink" title="聚集索与非聚集索"></a>聚集索与非聚集索</h3><ul>
+<li>聚集索引：各行的物理顺序和逻辑顺序相同，一个表只能有一个。</li>
+<li>非聚集索引：数据与索引在不同位置，索引中存在指向数据的指针，可以有多个。非聚集索引，分成普通索引，唯一索引，全文索引。</li>
+</ul>
+<p>InnoDB的数据文件本身就是索引文件。InnoDB数据文件按聚集索引，所以InnoDB必须有主键。InnoDB聚集索引规则：</p>
+<ol>
+<li>如果有主键，主键就是聚集索引。</li>
+<li>如果没有主键，第一个唯一非空索引就是聚集索引。</li>
+<li>如果1、2都没有，会生成一个隐藏的主键作为聚集索引，它是6个字节的列，随着数据插入自增。</li>
+</ol>
+<h3 id="MyISAM和InnoDB索引实现"><a href="#MyISAM和InnoDB索引实现" class="headerlink" title="MyISAM和InnoDB索引实现"></a>MyISAM和InnoDB索引实现</h3><table>
+<thead>
+<tr>
+<th>索引</th>
+<th>MyISAM</th>
+<th>InnoDB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主键索引</td>
+<td>在主键索引中，索引页中存放的是主键和指向数据页的偏移量；数据页中存放的是主键和该主键所属行记录的地址空间。</td>
+<td>在主键索引中，索引页中存放的是主键和指向数据页的偏移量；数据页中存放的是主键和该主键所属行记录的地址空间。</td>
+</tr>
+<tr>
+<td>辅助索引</td>
+<td>索引页仍然存放主键和和指向数据页的偏移量，但数据页存放的是完整的记录。</td>
+<td>索引节点存放的内容一样，仍然是键值信息和指向数据页的偏移量；但数据页中存放的是键值信息和该键值对应的主键。然后通过主键查询主键索引就能找到该条记录。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="索引的优点"><a href="#索引的优点" class="headerlink" title="索引的优点"></a>索引的优点</h3><ul>
+<li>创建唯一性索引，可以确保每行数据的唯一性。</li>
+<li>提高数据检索效率。</li>
+<li>加快表与表之间的连接。</li>
+<li>使用分组和排序字句检索时，可以加快检索时间。</li>
+<li>通过使用索引，在查询过程中，使用查询优化器，提高系统性能。</li>
+</ul>
+<h3 id="索引的缺点"><a href="#索引的缺点" class="headerlink" title="索引的缺点"></a>索引的缺点</h3><ul>
+<li>时间方面：创建和维护需要时间。对数据增删改也需要对索引维护。</li>
+<li>空间方面：索引需要占据物理空间。</li>
+</ul>
+<h3 id="索引的优化"><a href="#索引的优化" class="headerlink" title="索引的优化"></a>索引的优化</h3><ul>
+<li>非空字段：索引的列最好为非空。空值很难优化，用其他方式（0，特殊值等）代替空值。</li>
+<li>取离散大的列：将更离散的数据放在联合索引前面。</li>
+<li>索引字段越小越好：数据以页为单位存储，一页数据越多，一次IO操作得到的数据越多。</li>
+<li>对 where,on,group by,order by 中出现的列使用索引。</li>
+<li>对于like查询，%不放在前面。</li>
+<li>最左前缀匹配原则。</li>
+</ul>
+<h3 id="最左前缀匹配原则"><a href="#最左前缀匹配原则" class="headerlink" title="最左前缀匹配原则"></a>最左前缀匹配原则</h3><p>mysql会向右匹配到范围查询（&lt;,&gt;,between等），=、in放在左边。 = in 可以乱序。</p>
 
       
     </div>
+    
+    
+    
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+      
+    </div>
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据库，索引-面试/" rel="tag"><i class="fa fa-tag"></i> 数据库，索引,面试</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/22/数据库范式/" rel="next" title="数据库范式总结">
+                <i class="fa fa-chevron-left"></i> 数据库范式总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
 
 
           </div>
@@ -351,6 +572,15 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMTk1OC84NTIy"></div>
+    </div>
+
+  
+
+
 
         </div>
         
@@ -371,8 +601,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -391,7 +630,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -402,7 +641,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -413,7 +652,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -452,6 +691,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库索引总结"><span class="nav-number">1.</span> <span class="nav-text">数据库索引总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库索引"><span class="nav-number">1.1.</span> <span class="nav-text">数据库索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#B树和B-树的区别"><span class="nav-number">1.1.1.</span> <span class="nav-text">B树和B+树的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#B树的好处"><span class="nav-number">1.1.1.0.1.</span> <span class="nav-text">B树的好处</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#B-树的好处"><span class="nav-number">1.1.1.0.2.</span> <span class="nav-text">B+树的好处</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库使用B-还不是B"><span class="nav-number">1.1.2.</span> <span class="nav-text">数据库使用B+还不是B</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引类型"><span class="nav-number">1.1.3.</span> <span class="nav-text">索引类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#聚集索与非聚集索"><span class="nav-number">1.1.4.</span> <span class="nav-text">聚集索与非聚集索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MyISAM和InnoDB索引实现"><span class="nav-number">1.1.5.</span> <span class="nav-text">MyISAM和InnoDB索引实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引的优点"><span class="nav-number">1.1.6.</span> <span class="nav-text">索引的优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引的缺点"><span class="nav-number">1.1.7.</span> <span class="nav-text">索引的缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引的优化"><span class="nav-number">1.1.8.</span> <span class="nav-text">索引的优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最左前缀匹配原则"><span class="nav-number">1.1.9.</span> <span class="nav-text">最左前缀匹配原则</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -585,6 +840,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
 
   
 
@@ -613,6 +872,17 @@
 
 
 
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
   
 
 
