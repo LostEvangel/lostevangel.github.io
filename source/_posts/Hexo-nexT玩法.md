@@ -1,0 +1,132 @@
+---
+title: Hexo nexT的一些玩法（转载+总结）
+date: 2017-11-22 15:50:14
+tags: [Hexo, next]
+categories: 搭建博客
+---
+
+## 基础篇
+
+### 1. 常用命令
+
+```
+hexo new "HelloWorld" #新建文章
+hexo new page "pageName" #新建页面
+hexo n "我的博客" == hexo new "我的博客" #新建文章
+hexo p == hexo publish
+hexo g == hexo generate #生成
+hexo s == hexo server #启动服务预览
+hexo d == hexo deploy #部署
+hexo d #部署 #可与hexo g合并为 hexo d -g ```
+
+
+### 2. 文章中插入图片
+
+对于hexo，有两种方式： 
+使用本地路径：在hexo/source目录下新建一个img文件夹，将图片放入该文件夹下，插入图片时链接即为/img/图片名称。 
+使用微博图床，地址 http://weibotuchuang.sinaapp.com/ ，将图片拖入区域中，会生成图片的URL，这就是链接地址。
+### 3. 添加分页、标签页面
+
+ - 新建
+命令：
+
+> hexo new page tags # tags可替换成其他
+
+输入命令后，在/source下会新生成一个新的文件夹tags，在该文件夹下会有一个index.md文件。
+在上步新生成的myBlog/source/tags/index.md中添加type: "tags"，index.md文件内容如下：
+设置具体文章的tags
+当要为某一篇文章添加标签，只需在/source/_post目录下的具体文章的tags中添加标签即可，如：
+
+> tags: [hexo,next]
+
+### 4. 引入第三方服务 
+
+参考 : http://theme-next.iissnan.com/third-party-services.html#swfitype
+
+ 1. 加入分享功能
+在主题配置文件中，jiathis: true
+
+ 2. 加入评论功能
+待续
+
+ 3. 加入站点内容搜索功能
+1) 安装 hexo-generator-searchdb，在站点的根目录下执行以下命令：
+
+ > $ npm install hexo-generator-searchdb --save
+
+ 2) 编辑 站点配置文件，新增以下内容到任意位置：
+
+ ```
+ search:
+    path: search.xml
+    field: post
+    format: html
+    limit: 10000
+ ```
+ 3) 编辑 主题配置文件，启用本地搜索功能：
+
+ ```local_search:
+    enable: true```
+    
+ 4. 数据统计
+
+ 待续
+
+
+## 个性化 ([参考](http://blog.csdn.net/qq_33699981/article/details/72716951))
+
+### 1. 修改文章内链接文本样式（待考证）
+
+修改文件 themes\next\source\css\_common\components\post\post.styl，在末尾添加如下css样式，：
+
+```CSS
+// 文章内链接文本样式
+.post-body p a{
+  color: #0593d3;
+  border-bottom: none;
+  border-bottom: 1px solid #0593d3;
+  &:hover {
+    color: #fc6423;
+    border-bottom: none;
+    border-bottom: 1px solid #fc6423;
+  }
+}
+```
+
+### 2. 修改文章底部的那个带#号的标签
+修改模板/themes/next/layout/_macro/post.swig，搜索 rel="tag">#，将 # 换成
+/` <i class="fa fa-tag"></i> `/
+
+### 3. 在每篇文章末尾统一添加“本文结束”标记
+在路径 \themes\next\layout\_macro 中新建 passage-end-tag.swig 文件,并添加以下内容：
+```HTML 
+<div>
+    {% if not is_index %}
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    {% endif %}
+</div>
+```
+接着打开\themes\next\layout\_macro\post.swig文件，在post-body 之后， post-footer 之前添加如下画红色部分代码（post-footer之前两个DIV）：
+![blog1.png](/image/blog1.png)
+
+### 3. 修改网页底部的桃心
+还是打开themes/next/layout/_partials/footer.swig，找到： 
+```  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>```
+然后还是在[图标库](http://fontawesome.io/icons/)中找到你自己喜欢的图标，然后修改画红线的部分就可以了。
+### 4. 添加顶部加载条
+打开/themes/next/layout/_partials/head.swig文件，修改为 :
+```
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+<link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+<meta name="theme-color" content="{{ theme.android_chrome_color }}">```
+
+参考资料： 
+http://www.jianshu.com/p/c23902f93558
+http://blog.csdn.net/qq_33699981/article/details/72716951
+http://playingfingers.com/2016/03/26/build-a-blog/
+https://segmentfault.com/a/1190000003946969
