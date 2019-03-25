@@ -1,5 +1,6 @@
 ---
 title: 搭建ShadowSocks
+date: 2018-9-21 18:55:35
 tags: [ShadowSocks]
 categories: 科学上网
 ---

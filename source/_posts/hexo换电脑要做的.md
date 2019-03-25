@@ -44,7 +44,7 @@ git push origin hexo
 
 1. clone到本地
 ```
-git clone -b hexo git@github.com:heimu24/heimu24.github.io.git
+git clone -b hexo 项目
 ```
 
 2. 发布博客和更新
