@@ -1,8 +1,8 @@
 ---
 title: Hexo nexT的一些玩法（转载+总结）
 date: 2017-11-22 15:50:14
-tags: [Hexo, next]
-categories: 搭建博客
+tags: [Hexo]
+categories: Hexo
 ---
 
 ## 基础篇
