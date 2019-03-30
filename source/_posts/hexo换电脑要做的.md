@@ -1,5 +1,5 @@
 ---
-title: hexo换机前后的需要做的
+title: Hexo换机前后的需要做的
 date: 2019-03-24 15:24:27
 tags: Hexo
 categories: Hexo
