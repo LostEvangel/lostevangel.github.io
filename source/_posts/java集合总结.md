@@ -1,11 +1,11 @@
 ---
-title: java集合总结
+title: Java集合总结
 date: 2019-03-27 22:17:19
 tags: [面试,java]
 categories: [面试,java]
 ---
 
-# java集合
+# Java集合
 
 参考：[java三大集合框架](https://blog.csdn.net/weixin_39464761/article/details/75137902)
 

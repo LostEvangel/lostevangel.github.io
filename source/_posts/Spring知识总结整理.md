@@ -105,7 +105,7 @@ GET:
 两种写法，一种是实现HandlerInterceptor接口，一种是继承适配器类，在接口方法中实现。然后再springmvc的配置文件中配置。
 
 ```xml
-<mvc:interceptor>
+<mvc:interceptors>
     <!--默认拦截所有-->
     <bean id='myInterceptor' class='cn.keinz.myHandlerInterceptor'>
     <!--只针对某个url-->
@@ -113,7 +113,7 @@ GET:
         <mvc: mapping path='/user'/>
         <bean class='cn.keinz.myHandlerInterceptorAdapter'>
     </mvc: interceptor>
-</mvc:interceptor>
+</mvc:interceptors>
 ```
 
 #### 注解原理
@@ -257,13 +257,25 @@ IOC:把对象的创建、初始化、销毁交给spring来管理，而不是由�
 - org.springframework.beans.factory.BeanFactory 是Spring IoC容器的具体实现，用来包装和管理前面提到的各种bean。BeanFactory接口是Spring IoC 容器的核心接口。
 
 #### BeanFactory和ApplicationContext有什么区别
-- BeanFactory 可以理解为含有bean集合的工厂类。BeanFactory 包含了种bean的定义，以便在接收到客户端请求时将对应的bean实例化。
-- BeanFactory还能在实例化对象的时生成协作类之间的关系。此举将bean自身与bean客户端的配置中解放出来。BeanFactory还包含了bean生命周期的控制，调用客户端的初始化方法（initialization methods）和销毁方法（destruction methods）。
-- 从表面上看，application context如同bean factory一样具有bean定义、bean关联关系的设置，根据请求分发bean的功能。但applicationcontext在此基础上还提供了其他的功能。
+##### 描述：
+BeanFactory：是Spring里面最低层的接口，提供了最简单的容器的功能，只提供了实例化对象和拿对象的功能；
+ApplicationContext：应用上下文，继承BeanFactory接口，它是Spring的一各更高级的容器，提供了更多的有用的功能：
+1. 国际化（MessageSource）
+2. 访问资源，如URL和文件（ResourceLoader）
+3. 载入多个（有继承关系）上下文 ，使得每一个上下文都专注于一个特定的层次，比如应用的web层  
+4. 消息发送、响应机制（ApplicationEventPublisher）
+5. AOP（拦截器）
 
-1. 提供了支持国际化的文本消息
-2. 统一的资源文件读取方式
-3. 已在监听器中注册的bean的事件
+##### 两者装载bean的区别：
+BeanFactory：BeanFactory在启动的时候不会去实例化Bean，只有从容器中拿Bean的时候才会去实例化；
+ApplicationContext：ApplicationContext在启动的时候就把所有的Bean全部实例化了。它还可以为Bean配置lazy-init=true来让Bean延迟实例化； 
+##### 用BeanFactory还是ApplicationContent
+延迟实例化的优点：（BeanFactory）
+应用启动的时候占用资源很少；对资源要求较高的应用，比较有优势； 
+不延迟实例化的优点： （ApplicationContext）
+1. 所有的Bean在启动的时候都加载，系统运行的速度快； 
+2. 在启动的时候所有的Bean都加载了，我们就能在系统启动的时候，尽早的发现系统中的配置问题 
+3. 建议web应用，在启动的时候就把所有的Bean都加载了。（把费时的操作放到系统启动中完成）
 
 #### Spring有几种配置方式
 - 基于xml配置
@@ -272,7 +284,7 @@ IOC:把对象的创建、初始化、销毁交给spring来管理，而不是由�
 
 #### 如何用基于XML配置的方式配置Spring
 
-在Spring框架中，依赖和服务需要在专门的配置文件来实现，常用的XML格式的配置文件。这些配置文件的格式通常用<beans>开头，然后一系列的bean定义和专门的应用配置选项组成。
+在Spring框架中，依赖和服务需要在专门的配置文件来实现，常用的XML格式的配置文件。这些配置文件的格式通常用&lt;beans&gt;开头，然后一系列的bean定义和专门的应用配置选项组成。
 
 SpringXML配置的主要目的时候是使所有的Spring组件都可以用xml文件的形式来进行配置。这意味着不会出现其他的Spring配置类型（比如声明的方式或基于Java Class的配置方式）
 
@@ -299,27 +311,33 @@ Spring在2.5版本以后开始支持用注解的方式来配置依赖注入。�
 - @Qualifier：该注解和@Autowired注解搭配使用，用于消除特定bean自动装配的歧义。
 - JSR-250 Annotations：Spring支持基于JSR-250 注解的以下注解，@Resource、@PostConstruct 和 @PreDestroy。
 
-#### 什么是Spring beans
-Spring beans 是那些形成Spring应用的主干的java对象。它们被Spring IOC容器初始化，装配，和管理。这些beans通过容器中配置的元数据创建。比如，以XML文件中<bean/> 的形式定义。
+#### 什么是Spring Beans
+Spring beans 是那些形成Spring应用的主干的java对象。它们被Spring IOC容器初始化，装配，和管理。这些beans通过容器中配置的元数据创建。比如，以XML文件中&lt;bean/&gt; 的形式定义。
 
 Spring 框架定义的beans都是单件beans。在bean tag中有个属性”singleton”，如果它被赋为TRUE，bean 就是单件，否则就是一个 prototype bean。默认是TRUE，所以所有在Spring框架中的beans 缺省都是单件。
 
 #### 请解释Spring Bean的生命周期
 
-- Spring容器 从XML 文件中读取bean的定义，并实例化bean。
-- Spring根据bean的定义填充所有的属性。
-- 如果bean实现了BeanNameAware 接口，Spring 传递bean 的ID 到 setBeanName方法。
-- 如果Bean 实现了 BeanFactoryAware 接口， Spring传递beanfactory 给setBeanFactory 方法。
-- 如果有任何与bean相关联的BeanPostProcessors，Spring会在postProcesserBeforeInitialization()方法内调用它们。
-- 如果bean实现IntializingBean了，调用它的afterPropertySet方法，如果bean声明了初始化方法，调用此初始化方法。
-- 如果有BeanPostProcessors 和bean 关联，这些bean的postProcessAfterInitialization() 方法将被调用。
-- 如果bean实现了 DisposableBean，它将调用destroy()方法。
+- 实例化bean对象(通过构造方法或者工厂方法)
+- 设置对象属性(setter等)（依赖注入）
+- 如果Bean实现了BeanNameAware接口，工厂调用Bean的setBeanName()方法传递Bean的ID。（和下面的一条均属于检查Aware接口）
+- 如果Bean实现了BeanFactoryAware接口，工厂调用setBeanFactory()方法传入工厂自身
+- 将Bean实例传递给Bean的前置处理器的postProcessBeforeInitialization(Object bean, String beanname)方法
+- InitializingBean的afterPropertiesSet()，如果实现了该接口，则执行其afterPropertiesSet()方法
+- 调用Bean的初始化方法init-method
+- 将Bean实例传递给Bean的后置处理器的postProcessAfterInitialization(Object bean, String beanname)方法
+- DisposableBean的destroy()，在容器关闭时，如果Bean类实现了该接口，则执行它的destroy()方法
+- 容器关闭之前，调用Bean的销毁方法destroy-method，可以在Bean定义文件中使用destory-method定义的方法
+
+如果使用ApplicationContext来维护一个Bean的生命周期，则基本上与上边的流程相同，只不过在执行BeanNameAware的setBeanName()后，若有Bean类实现了org.springframework.context.ApplicationContextAware接口，则执行其setApplicationContext()方法，然后再进行BeanPostProcessors的processBeforeInitialization()
+实际上，ApplicationContext除了向BeanFactory那样维护容器外，还提供了更加丰富的框架功能，如Bean的消息，事件处理机制等
+
 
 #### Spring支持的几种bean的作用域
 当定义一个<bean> 在Spring里，我们还能给这个bean声明一个作用域。它可以通过bean 定义中的scope属性来定义。如，当Spring要在需要的时候每次生产一个新的bean实例，bean的scope属性被指定为prototype。另一方面，一个bean每次使用的时候必须返回同一个实例，这个bean的scope 属性 必须设为 singleton。
 - **singleton** : bean在每个Spring ioc 容器中只有一个实例。
 - **prototype**：一个bean的定义可以有多个实例。
-- request：每次http请求都会创建一个bean，该作用域仅在基于web的Spring ApplicationContext情形下有效。
+- **request**：每次http请求都会创建一个bean，该作用域仅在基于web的Spring ApplicationContext情形下有效。
 - **session**：在一个HTTP Session中，一个bean定义对应一个实例。该作用域仅在基于web的Spring ApplicationContext情形下有效。
 - **global-session**：在一个全局的HTTP Session中，一个bean定义对应一个实例。该作用域仅在基于web的Spring ApplicationContext情形下有效。
 
@@ -329,19 +347,19 @@ Spring 框架定义的beans都是单件beans。在bean tag中有个属性”sing
 The bean 标签有两个重要的属性（init-method和destroy-method）。用它们你可以自己定制初始化和注销方法。它们也有相应的注解（@PostConstruct和@PreDestroy）。
 
 #### 什么是Spring的内部bean
-当一个bean仅被用作另一个bean的属性时，它能被声明为一个内部bean，为了定义inner bean，在Spring 的 基于XML的 配置元数据中，可以在 <property/>或 <constructor-arg/> 元素内使用<bean/> 元素，内部bean通常是匿名的，它们的Scope一般是prototype。
+当一个bean仅被用作另一个bean的属性时，它能被声明为一个内部bean，为了定义inner bean，在Spring 的 基于XML的 配置元数据中，可以在&lt;property/&gt;或 &lt;constructor-arg/&gt; 元素内使用&lt;bean/&gt;元素，内部bean通常是匿名的，它们的Scope一般是prototype。
 
 #### 在 Spring中如何注入一个java集合
 
-- <list>类型用于注入一列值，允许有相同的值。
-- <set> 类型用于注入一组值，不允许有相同的值。
-- <map> 类型用于注入一组键值对，键和值都可以为任意类型。
-- <props>类型用于注入一组键值对，键和值都只能为String类型。
+- &lt;list&gt;类型用于注入一列值，允许有相同的值。
+- &lt;set&gt;类型用于注入一组值，不允许有相同的值。
+- &lt;map&gt;类型用于注入一组键值对，键和值都可以为任意类型。
+- &lt;props&gt;类型用于注入一组键值对，键和值都只能为String类型。
 
 #### bean装配、bean的自动装配
 装配，或bean 装配是指在Spring 容器中把bean组装到一起，前提是容器需要知道bean的依赖关系，如何通过依赖注入来把它们装配到一起。
 
-Spring 容器能够自动装配相互合作的bean，这意味着容器不需要<constructor-arg>和<property>配置，能通过Bean工厂自动处理bean之间的协作。
+Spring 容器能够自动装配相互合作的bean，这意味着容器不需要&lt;constructor-arg&gt;和&lt;property&gt;配置，能通过Bean工厂自动处理bean之间的协作。
 
 #### 解释不同方式的自动装配
 - **no**：默认的方式是不进行自动装配，通过显式设置ref 属性来进行装配。
@@ -352,7 +370,7 @@ Spring 容器能够自动装配相互合作的bean，这意味着容器不需要
 
 #### 自动装配有哪些局限性
 
-- 重写： 你仍需用 <constructor-arg>和 <property> 配置来定义依赖，意味着总要重写自动装配。
+- 重写： 你仍需用 &lt;constructor-arg&gt;和 &lt;property&gt; 配置来定义依赖，意味着总要重写自动装配。
 - 基本数据类型：你不能自动装配简单的属性，如基本数据类型，String字符串，和类。
 - 模糊特性：自动装配不如显式装配精确，如果有可能，建议使用显式装配。
 
@@ -388,8 +406,7 @@ AOP核心就是切面，它将多个类的通用行为封装成可重用的模�
 
 #### 连接点、通知、切入点
 - 连接点：代表一个应用程序的某个位置，在这个位置我们可以插入一个AOP切面，它实际上是个应用程序执行Spring AOP的位置。
-- 通知：是个在方法执行前或执行后要做的动作，实际上是程序执行时要通过SpringAOP框架触发的代码段
-。
+- 通知：是个在方法执行前或执行后要做的动作，实际上是程序执行时要通过SpringAOP框架触发的代码段。
 - 切入点：是一个或一组连接点，通知将在这些位置执行。可以通过表达式或匹配的方式指明切入点
 
 #### Spring切面可以应用五种类型的通知
@@ -400,10 +417,9 @@ AOP核心就是切面，它将多个类的通用行为封装成可重用的模�
 - after-throwing: 在方法抛出异常退出时执行的通知。
 - around: 在方法执行之前和之后调用的通知。
 
-#### 引入?、目标对象、代理
+#### 引入、目标对象、代理
 - 引入：允许我们在已存在的类中增加新的方法和属性。
-- 目标对象：
-被一个或者多个切面所通知的对象。它通常是一个代理对象。也指被通知（advised）对象。
+- 目标对象：被一个或者多个切面所通知的对象。它通常是一个代理对象。也指被通知（advised）对象。
 - 代理：是通知目标对象后创建的对象。从客户端的角度看，代理对象和目标对象是一样的。
 
 #### 有几种不同类型的自动代理
@@ -412,7 +428,7 @@ AOP核心就是切面，它将多个类的通用行为封装成可重用的模�
 - Metadata autoproxying
 
 #### 什么是织入。什么是织入应用的不同点
-织入是将切面和到其他应用类型或对象连接或创建一个被通知对象的过程。
+织入：把切面（aspect）连接到其它的应用程序类型或者对象上，并创建一个被通知（advised）的对象。
 
 织入可以在编译时，加载时，或运行时完成。
 
