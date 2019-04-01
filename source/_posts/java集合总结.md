@@ -19,7 +19,7 @@ categories: [面试,java]
 
 #### Set
 - HashSet（无序，唯一）：基于HashMap实现，底层采用HashMap保存数组。
-- LinkedHashList：继承与HashSet，并且其内部是通过LinkedHashMap实现。
+- LinkedHashSet：继承与HashSet，并且其内部是通过LinkedHashMap实现。
 - TreeSet（有序，唯一）：红黑树。
 
 ### Map 
