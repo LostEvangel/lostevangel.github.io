@@ -1,8 +1,8 @@
 ---
 title: Java集合总结
 date: 2019-03-27 22:17:19
-tags: [面试,java]
-categories: [面试,java]
+tags: [面试,Java]
+categories: [面试,Java]
 ---
 
 # Java集合
