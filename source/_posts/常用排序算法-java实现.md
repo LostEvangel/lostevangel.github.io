@@ -41,7 +41,7 @@ private void sort(int[] array, int start, int end){
     }
 }
 ```
-## 堆排序
+## 归并排序
 平均时间复杂度 | 最好情况 | 最坏情况 | 空间复杂度
 :-:|:-:|:-:|:-:
 O(nlog₂n) | O(nlog₂n)|	O(nlog₂n)|	O(n)）
