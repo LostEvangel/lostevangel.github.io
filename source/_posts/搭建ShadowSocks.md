@@ -21,7 +21,7 @@ https://shadowsocks.org/en/download/clients.html
 1. 检查Python版本
 
 ```
-$ python –version
+$ python -version
 ```
 
 2. 安装m2crypto和python-setuptools
@@ -33,6 +33,8 @@ $ yum install m2crypto python-setuptools
 3. 安装pip
 
 ```
+yum -y install epel-release
+
 yum -y install python-pip
 ```
 
@@ -40,11 +42,13 @@ yum -y install python-pip
 ```
 $ easy_install pip
 ```
+
 4. 安装ss
 
 ```
-$ pip shadowsocks
+$ pip install shadowsocks
 ```
+
 5. 配置服务器参数
 
 ```
@@ -72,6 +76,7 @@ $ vi /etc/shadowsocks.json
          "8888": " mypassword 2”
      },
 ```
+
 6. 安装gevent
 
     Gevent可以提高ss性能，由于gevent依赖于libevent和greenlet
@@ -81,6 +86,7 @@ $ yum install -y libevent
 $ pip install greenlet
 $ pip install gevent
 ```
+
 7. 配置防火墙
 
     为了提高系统的安全性，需要安装防火墙
@@ -99,7 +105,7 @@ $ systemctl start firewalld
 
 ```
 $ firewall-cmd --permanent --zone=public --add-port=443/tcp
-$ firewall-cmd –reload
+$ firewall-cmd --reload
 ```
 ###  查看修改ss服务器的端口密码
 
@@ -123,14 +129,13 @@ vim /etc/shadowsocks.json
 - ss启动停止方法
 
 启动，停止，重启，状态：
+
 ```
-service shadowsocks start
+ssserver -c /etc/shadowsocks.json -d start
 
-service shadowsocks stop
+ssserver -c /etc/shadowsocks.json -d stop
 
-service shadowsocks restart
-
-service shadowsocks status
+ssserver -c /etc/shadowsocks.json -d restart
 ```
 
 参考：
