@@ -3,6 +3,7 @@ title: ScrapyDemo
 date: 2017-11-30 12:20:49
 tags: [Python, scrapy]
 categories: 爬虫
+description: 自用ScrapyDemo
 ---
 
 

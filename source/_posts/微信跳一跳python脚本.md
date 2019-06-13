@@ -3,6 +3,7 @@ title: 微信跳一跳Python脚本
 date: 2018-01-09 19:57:19
 tags: [Python]
 categories: Python
+description: 闲着无聊，搞一搞跳一跳。
 ---
 
 

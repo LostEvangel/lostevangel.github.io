@@ -3,7 +3,7 @@ title: Lambda序列化问题
 date: 2017-12-12 16:05:58
 tags: Java
 categories: Lambda表达式
-
+description: 这几天用spark遇到一个问题，到现在仍没有解决，不过查到了一些思路，可能与序列化有关。
 ---
 
 # Lambda序列化问题

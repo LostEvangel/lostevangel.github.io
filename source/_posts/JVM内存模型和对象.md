@@ -3,6 +3,7 @@ title: JVM内存模型和对象
 date: 2019-4-15 14:34:34
 tags: [面试,JVM]
 categories: [面试,JVM]
+description: JVM的内存模型和对象
 ---
 
 # JVM内存模型和对象

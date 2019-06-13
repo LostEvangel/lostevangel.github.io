@@ -3,6 +3,7 @@ title: Hexo nexT的一些玩法（转载+总结）
 date: 2017-11-22 15:50:14
 tags: [Hexo]
 categories: Hexo
+description: Hexo真是太棒了
 ---
 
 ## 基础篇

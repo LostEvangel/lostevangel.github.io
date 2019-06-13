@@ -3,6 +3,7 @@ title: GC相关
 date: 2019-4-16 14:37:09
 tags: [面试,JVM]
 categories: [面试,JVM]
+description: Java面试中，关于GC的知识。
 ---
 
 # GC相关

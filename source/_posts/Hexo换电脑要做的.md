@@ -1,9 +1,9 @@
 ---
-title: Hexo换机前后的需要做的
+title: Hexo如何在github上备份
 date: 2019-03-24 15:24:27
 tags: Hexo
 categories: Hexo
-
+description: Hexo如何在github上备份，在不同电脑上同步能用到。
 ---
 
 ## 换机之前的步骤
