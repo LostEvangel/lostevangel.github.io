@@ -12,48 +12,121 @@ description: ConcurrentHashMap的put和扩容。
 
 # ConcurrentHashMap
 
-## put操作
+## put方法
+
+<https://www.jianshu.com/p/0fb89aefac66>
 
 1. 检查key/value是否为空，如果为空，抛出异常。
+
 2. 进入for死循环
+
 3. table是否为null，如果为空，initTable，然后2
+
 4. 根据hash，计算出索引，取到该索引的节点f
+
 5. 检查f是否为空，如果为空，直接new一个新节点，并CAS插入，退出循环
+
 6. 如果f不空，检查f.hash == MOVED(-1)，如果相等，帮助扩容
+
 7. 如果f.hash != MOVED(-1)，synchronized该节点
+
 8. 如果链表中找到值为key的节点，更新节点的value；如果没有，new节点，增加到尾部
+
 9. 如果节点数>8，treeifyBin转换红黑树
 
-## 扩容
+```java
+public V put(K key, V value) {
+    return putVal(key, value, false);
+}
+
+/** Implementation for put and putIfAbsent */
+final V putVal(K key, V value, boolean onlyIfAbsent) {
+    if (key == null || value == null) throw new NullPointerException();
+    //计算hash值
+    int hash = spread(key.hashCode());
+    int binCount = 0;
+    for (Node<K,V>[] tab = table;;) {//自旋
+        //f:索引节点; n:tab.length; i:新节点索引 (n - 1) & hash; fh:f.hash
+        Node<K,V> f; int n, i, fh;
+        if (tab == null || (n = tab.length) == 0)
+            //初始化
+            tab = initTable();
+        else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {//索引i节点为空，直接插入
+            //cas插入节点,成功则跳出循环
+            if (casTabAt(tab, i, null,
+                         new Node<K,V>(hash, key, value, null)))
+                break;                   // no lock when adding to empty bin
+        }
+        //当前节点处于移动状态-其他线程正在进行节点转移操作
+        else if ((fh = f.hash) == MOVED)
+            //帮助转移
+            tab = helpTransfer(tab, f);
+        else {
+            V oldVal = null;
+            synchronized (f) {
+                if (tabAt(tab, i) == f) {//check stable
+                    //f.hash>=0,说明f是链表的头结点
+                    if (fh >= 0) {
+                        binCount = 1;//记录链表节点数，用于后面是否转换为红黑树做判断
+                        for (Node<K,V> e = f;; ++binCount) {
+                            K ek;
+                            //key相同 修改
+                            if (e.hash == hash &&
+                                ((ek = e.key) == key ||
+                                 (ek != null && key.equals(ek)))) {
+                                oldVal = e.val;
+                                if (!onlyIfAbsent)
+                                    e.val = value;
+                                break;
+                            }
+                            Node<K,V> pred = e;
+                            //到这里说明已经是链表尾，把当前值作为新的节点插入到队尾
+                            if ((e = e.next) == null) {
+                                pred.next = new Node<K,V>(hash, key,
+                                                          value, null);
+                                break;
+                            }
+                        }
+                    }
+                    //红黑树节点操作
+                    else if (f instanceof TreeBin) {
+                        Node<K,V> p;
+                        binCount = 2;
+                        if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
+                                                       value)) != null) {
+                            oldVal = p.val;
+                            if (!onlyIfAbsent)
+                                p.val = value;
+                        }
+                    }
+                }
+            }
+            if (binCount != 0) {
+                //如果链表中节点数binCount >= TREEIFY_THRESHOLD(默认是8)，则把链表转化为红黑树结构
+                if (binCount >= TREEIFY_THRESHOLD)
+                    treeifyBin(tab, i);
+                if (oldVal != null)
+                    return oldVal;
+                break;
+            }
+        }
+    }
+    //更新新元素个数
+    addCount(1L, binCount);
+    return null;
+}
+```
+
+
+
+## 扩容transfer
 
 <https://www.jianshu.com/p/2829fe36a8dd>
 
-1. 通过计算 CPU 核心数和 Map 数组的长度得到每个线程（CPU）要帮助处理多少个桶，并且这里每个线程处理都是平均的。默认每个线程处理 16 个桶。因此，如果长度是 16 的时候，扩容的时候只会有一个线程扩容。
-
-2. 初始化临时变量 nextTable。将其在原有基础上扩容两倍。
-
-3. 死循环开始转移。多线程并发转移就是在这个死循环中，根据一个 finishing 变量来判断，该变量为 true 表示扩容结束，否则继续扩容。
-
-   3.1 进入一个 while 循环，分配数组中一个桶的区间给线程，默认是 16. 从大到小进行分配。当拿到分配值后，进行 i-- 递减。这个 i 就是数组下标。（`其中有一个 bound 参数，这个参数指的是该线程此次可以处理的区间的最小下标，超过这个下标，就需要重新领取区间或者结束扩容，还有一个 advance 参数，该参数指的是是否继续递减转移下一个桶，如果为 true，表示可以继续向后推进，反之，说明还没有处理好当前桶，不能推进`)
-    3.2 出 while 循环，进 if 判断，判断扩容是否结束，如果扩容结束，清空临死变量，更新 table 变量，更新库容阈值。如果没完成，但已经无法领取区间（没了），该线程退出该方法，并将 sizeCtl 减一，表示扩容的线程少一个了。如果减完这个数以后，sizeCtl 回归了初始状态，表示没有线程再扩容了，该方法所有的线程扩容结束了。（`这里主要是判断扩容任务是否结束，如果结束了就让线程退出该方法，并更新相关变量`）。然后检查所有的桶，防止遗漏。
-    3.3 如果没有完成任务，且 i 对应的槽位是空，尝试 CAS 插入占位符，让 putVal 方法的线程感知。
-    3.4 如果 i 对应的槽位不是空，且有了占位符，那么该线程跳过这个槽位，处理下一个槽位。
-    3.5 如果以上都是不是，说明这个槽位有一个实际的值。开始同步处理这个桶。
-    3.6 到这里，都还没有对桶内数据进行转移，只是计算了下标和处理区间，然后一些完成状态判断。同时，如果对应下标内没有数据或已经被占位了，就跳过了。
-
-4. 处理每个桶的行为都是同步的。防止 putVal 的时候向链表插入数据。
-    4.1 如果这个桶是链表，那么就将这个链表根据 length 取于拆成两份，取于结果是 0 的放在新表的低位，取于结果是 1 放在新表的高位。
-    4.2 如果这个桶是红黑数，那么也拆成 2 份，方式和链表的方式一样，然后，判断拆分过的树的节点数量，如果数量小于等于 6，改造成链表。反之，继续使用红黑树结构。
-    4.3 到这里，就完成了一个桶从旧表转移到新表的过程。
-
-好，以上，就是 transfer 方法的总体逻辑。还是挺复杂的。再进行精简，分成 3 步骤：
-
-1. 计算每个线程可以处理的桶区间。默认 16.
-2. 初始化临时变量 nextTable，扩容 2 倍。
-3. 死循环，计算下标。完成总体判断。
-4. 1 如果桶内有数据，同步转移数据。通常会像链表拆成 2 份。
-
-大体就是上的的 3 个步骤。
+1. 计算转移幅度`stride`（或者说是当前线程需要转移的节点数），最小为16；
+2. 创建一个相当于当前 table 两倍容量的 Node 数组`nextTab`，转移完成后用作新的 table ；
+3. 从`transferIndex`（初始为`table.length`，也就是 table 的最后一个节点）开始，依次向前处理`stride`个节点。用`i`作为索引控制流程。如果`table[i]`为空，用`fwd`占位，如果为`fwd`，跳过。如果`table[i]`是正常节点，用算法将链表/红黑树节点分割成两份，`nextTab`中生成索引为`i`和`i+n`的节点。
+4. 最后把操作过的节点都设为 ForwardingNode 节点（hash= MOVED，这样别的线程就可以检测到）
 
 再来看看源码和注释。
 
@@ -68,8 +141,7 @@ description: ConcurrentHashMap的put和扩容。
  */
 private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
     int n = tab.length, stride;
-    // 将 length / 8 然后除以 CPU核心数。如果得到的结果小于 16，那么就使用 16。
-    // 这里的目的是让每个 CPU 处理的桶一样多，避免出现转移任务不均匀的现象，如果桶较少的话，默认一个 CPU（一个线程）处理 16 个桶
+    // 转移幅度( tab.length/(NCPU*8) )，最小为16
     if ((stride = (NCPU > 1) ? (n >>> 3) / NCPU : n) < MIN_TRANSFER_STRIDE)
         stride = MIN_TRANSFER_STRIDE; // subdivide range 细分范围 stridea：TODO
     // 新的 table 尚未初始化
@@ -97,31 +169,35 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
     boolean advance = true;
     // 完成状态，如果是 true，就结束此方法。
     boolean finishing = false; // to ensure sweep before committing nextTab
-    // 死循环,i 表示下标，bound 表示当前线程可以处理的当前桶区间最小下标
+    // i：当前处理的Node索引；bound：需要处理节点的索引边界
     for (int i = 0, bound = 0;;) {
+        // f:当前处理i位置的node; fh:f.hash
         Node<K,V> f; int fh;
         // 如果当前线程可以向后推进；这个循环就是控制 i 递减。同时，每个线程都会进入这里取得自己需要转移的桶的区间
         while (advance) {
+            //nextIndex:下一个要处理的节点索引; nextBound:下一个需要处理的节点的索引边界
             int nextIndex, nextBound;
-            // 对 i 减一，判断是否大于等于 bound （正常情况下，如果大于 bound 不成立，说明该线程上次领取的任务已经完成了。那么，需要在下面继续领取任务）
-            // 如果对 i 减一大于等于 bound（还需要继续做任务），或者完成了，修改推进状态为 false，不能推进了。任务成功后修改推进状态为 true。
+            // 通过while循环获取本次需要移动的节点索引i
             // 通常，第一次进入循环，i-- 这个判断会无法通过，从而走下面的 nextIndex 赋值操作（获取最新的转移下标）。其余情况都是：如果可以推进，将 i 减一，然后修改成不可推进。如果 i 对应的桶处理成功了，改成可以推进。
             if (--i >= bound || finishing)
-                advance = false;// 这里设置 false，是为了防止在没有成功处理一个桶的情况下却进行了推进
-            // 这里的目的是：1. 当一个线程进入时，会选取最新的转移下标。2. 当一个线程处理完自己的区间时，如果还有剩余区间的没有别的线程处理。再次获取区间。
+                advance = false;
+            // 节点已全部转移。
             else if ((nextIndex = transferIndex) <= 0) {
                 // 如果小于等于0，说明没有区间了 ，i 改成 -1，推进状态变成 false，不再推进，表示，扩容结束了，当前线程可以退出了
                 // 这个 -1 会在下面的 if 块里判断，从而进入完成状态判断
                 i = -1;
                 advance = false;// 这里设置 false，是为了防止在没有成功处理一个桶的情况下却进行了推进
-            }// CAS 修改 transferIndex，即 length - 区间值，留下剩余的区间值供后面的线程使用
+            }
+            //transferIndex（初值为最后一个节点的索引），表示从transferIndex开始后面所有的节点都已分配，
+            //每次线程领取扩容任务后，需要更新transferIndex的值(transferIndex-stride)。
+            //CAS修改transferIndex，即 length - 区间值，留下剩余的区间值供后面的线程使用
             else if (U.compareAndSwapInt
                      (this, TRANSFERINDEX, nextIndex,
                       nextBound = (nextIndex > stride ?
                                    nextIndex - stride : 0))) {
                 bound = nextBound;// 这个值就是当前线程可以处理的最小当前区间最小下标
                 i = nextIndex - 1; // 初次对i 赋值，这个就是当前线程可以处理的当前区间的最大下标
-                advance = false; // 这里设置 false，是为了防止在没有成功处理一个桶的情况下却进行了推进，这样对导致漏掉某个桶。下面的 if (tabAt(tab, i) == f) 判断会出现这样的情况。
+                advance = false; 
             }
         }// 如果 i 小于0 （不在 tab 下标内，按照上面的判断，领取最后一段区间的线程扩容结束）
         //  如果 i >= tab.length(不知道为什么这么判断)
@@ -133,10 +209,12 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
                 table = nextTab;// 更新 table
                 sizeCtl = (n << 1) - (n >>> 1); // 更新阈值
                 return;// 结束方法。
-            }// 如果没完成
+            }
+            //当前线程已经完成转移，但可能还有其他线程正在进行转移操作
+            //每个线程完成自己的扩容操作后就对sizeCtl-1
             if (U.compareAndSwapInt(this, SIZECTL, sc = sizeCtl, sc - 1)) {// 尝试将 sc -1. 表示这个线程结束帮助扩容了，将 sc 的低 16 位减一。
-                if ((sc - 2) != resizeStamp(n) << RESIZE_STAMP_SHIFT)// 如果 sc - 2 不等于标识符左移 16 位。如果他们相等了，说明没有线程在帮助他们扩容了。也就是说，扩容结束了。
-                    return;// 不相等，说明没结束，当前线程结束方法。
+                if ((sc - 2) != resizeStamp(n) << RESIZE_STAMP_SHIFT)// 如果 sc - 2 不等于标识符左移 16 位。不相等，说明这里还有其他线程正在操作，直接返回。
+                    return; //如果还有其他线程正在操作，直接返回，否则的话重新初始化i对原tab进行一遍检查然后再提交
                 finishing = advance = true;// 如果相等，扩容结束了，更新 finising 变量
                 i = n; // 再次循环检查一下整张表
             }
@@ -147,32 +225,30 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
             advance = true; // already processed // 说明别的线程已经处理过了，再次推进一个下标
         else {// 到这里，说明这个位置有实际值了，且不是占位符。对这个节点上锁。为什么上锁，防止 putVal 的时候向链表插入数据
             synchronized (f) {
-                // 判断 i 下标处的桶节点是否和 f 相同
                 if (tabAt(tab, i) == f) {
-                    Node<K,V> ln, hn;// low, height 高位桶，低位桶
+                    Node<K,V> ln, hn;//处理当前拿到的节点,构建两个node:ln/hn。ln:原位置; hn:i+n位置
                     // 如果 f 的 hash 值大于 0 。TreeBin 的 hash 是 -2
-                    if (fh >= 0) {
-                        // 对老长度进行与运算（第一个操作数的的第n位于第二个操作数的第n位如果都是1，那么结果的第n为也为1，否则为0）
+                    if (fh >= 0) {//当前为链表节点（fh>=0）
+                        // 对老长度进行与运算, 把原链表中的元素分成两份
                         // 由于 Map 的长度都是 2 的次方（000001000 这类的数字），那么取于 length 只有 2 种结果，一种是 0，一种是1
-                        //  如果是结果是0 ，Doug Lea 将其放在低位，反之放在高位，目的是将链表重新 hash，放到对应的位置上，让新的取于算法能够击中他。
+                        //  如果是结果是0 ，Doug Lea 将其放在低位，反之放在高位，目的是将链表重新 hash，放到对应的位置上，使新的索引为i+n或i不变
                         int runBit = fh & n;
-                        Node<K,V> lastRun = f; // 尾节点，且和头节点的 hash 值取于不相等
-                        // 遍历这个桶
+                        //最后一个与头节点f索引不同的节点
+                        Node<K,V> lastRun = f; 
+                        //从索引i的节点开始向后查找最后一个有效节点
                         for (Node<K,V> p = f.next; p != null; p = p.next) {
-                            // 取于桶中每个节点的 hash 值
                             int b = p.hash & n;
-                            // 如果节点的 hash 值和首节点的 hash 值取于结果不同
                             if (b != runBit) {
                                 runBit = b; // 更新 runBit，用于下面判断 lastRun 该赋值给 ln 还是 hn。
                                 lastRun = p; // 这个 lastRun 保证后面的节点与自己的取于值相同，避免后面没有必要的循环
                             }
                         }
-                        if (runBit == 0) {// 如果最后更新的 runBit 是 0 ，设置低位节点
+                        if (runBit == 0) {// 如果最后更新的 runBit 是 0 ，索引为i不变
                             ln = lastRun;
                             hn = null;
                         }
                         else {
-                            hn = lastRun; // 如果最后更新的 runBit 是 1， 设置高位节点
+                            hn = lastRun; // 如果最后更新的 runBit 是 1，新的索引为i+n
                             ln = null;
                         }// 再次循环，生成两个链表，lastRun 作为停止条件，这样就是避免无谓的循环（lastRun 后面都是相同的取于结果）
                         for (Node<K,V> p = f; p != lastRun; p = p.next) {
@@ -203,7 +279,7 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
                             int h = e.hash;
                             TreeNode<K,V> p = new TreeNode<K,V>
                                 (h, e.key, e.val, null, null);
-                            // 和链表相同的判断，与运算 == 0 的放在低位
+                            // 和链表相同的判断，与运算 == 0 的放在原位置
                             if ((h & n) == 0) {
                                 if ((p.prev = loTail) == null)
                                     lo = p;
@@ -211,7 +287,7 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
                                     loTail.next = p;
                                 loTail = p;
                                 ++lc;
-                            } // 不是 0 的放在高位
+                            } // 不是 0 的放在i+n
                             else {
                                 if ((p.prev = hiTail) == null)
                                     hi = p;
@@ -239,5 +315,33 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
             }
         }
     }
+}
+```
+
+## helpTransfer方法
+
+如果索引到的节点的 hash 为-1，说明当前节点处于移动状态（或者说是其他线程正在对 f 节点进行转移操作。这里主要是靠 ForwardingNode 节点来检测，因为ForwardingNode 中有指向nextTable的指针，可以得到nextTable。这个线程就可以先去帮助扩容。
+
+```java
+//帮助其他线程进行转移操作
+final Node<K,V>[] helpTransfer(Node<K,V>[] tab, Node<K,V> f) {
+    Node<K,V>[] nextTab; int sc;
+    if (tab != null && (f instanceof ForwardingNode) &&
+        (nextTab = ((ForwardingNode<K,V>)f).nextTable) != null) {
+        //计算操作栈校验码
+        int rs = resizeStamp(tab.length);
+        while (nextTab == nextTable && table == tab &&
+               (sc = sizeCtl) < 0) {
+            if ((sc >>> RESIZE_STAMP_SHIFT) != rs || sc == rs + 1 ||
+                sc == rs + MAX_RESIZERS || transferIndex <= 0)//不需要帮助转移，跳出
+                break;
+            if (U.compareAndSwapInt(this, SIZECTL, sc, sc + 1)) {//CAS更新帮助转移的线程数
+                transfer(tab, nextTab);
+                break;
+            }
+        }
+        return nextTab;
+    }
+    return table;
 }
 ```
