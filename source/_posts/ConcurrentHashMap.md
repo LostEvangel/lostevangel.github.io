@@ -1,10 +1,12 @@
 ---
 
-title: ConcurrentHashMap的put和扩容
+title: ConcurrentHashMap和HashMap部分源码解读
 date: 2019-6-20 23:52:44
 tags: [面试,Java]
 categories: [面试,Java]
-description: ConcurrentHashMap的put和扩容。
+photos:
+  - "https://github.com/CherryKeinz/cherrykeinz.github.io/blob/master/images/cover/2.jpg?raw=true"
+description: ConcurrentHashMap的put和扩容，HashMap的put、扩容、链树转化。
 
 ---
 
@@ -345,3 +347,262 @@ final Node<K,V>[] helpTransfer(Node<K,V>[] tab, Node<K,V> f) {
     return table;
 }
 ```
+
+# HashMap
+
+底层数据结构`数组+链表+红黑树`
+
+## 初始化时tableSizeFor方法
+
+找到大于或等于 cap 的最小2的幂的数作为table的size。
+
+```java
+/**
+ * Returns a power of two size for the given target capacity.
+ */
+static final int tableSizeFor(int cap) {
+    int n = cap - 1;
+    n |= n >>> 1;
+    n |= n >>> 2;
+    n |= n >>> 4;
+    n |= n >>> 8;
+    n |= n >>> 16;
+    return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+}
+```
+
+## 查找
+
+`(n - 1)& hash`相当于取这个数的二进制的n-1位，得到的就是映射到table的位置索引。
+
+> hash :             1011 1001
+>
+> n-1:                 0000 1111
+>
+> (n - 1)& hash :0000 1001
+
+```java
+final Node<K,V> getNode(int hash, Object key) {
+    Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
+    // first索引到的table的节点
+    if ((tab = table) != null && (n = tab.length) > 0 &&
+        (first = tab[(n - 1) & hash]) != null) {
+        if (first.hash == hash && // always check first node
+            // 如果first的key就是要查找的key，直接返回这个节点
+            ((k = first.key) == key || (key != null && key.equals(k))))
+            return first;
+        // 如果不是，并且还有next的节点，继续查找
+        if ((e = first.next) != null) {
+            // 如果 first 是 TreeNode 类型，则调用黑红树查找方法
+            if (first instanceof TreeNode)
+                return ((TreeNode<K,V>)first).getTreeNode(hash, key);
+                
+            // 对链表进行查找
+            do {
+                if (e.hash == hash &&
+                    ((k = e.key) == key || (key != null && key.equals(k))))
+                    return e;
+            } while ((e = e.next) != null);
+        }
+    }
+    return null;
+}
+```
+
+## 遍历
+
+用Iterator迭代器遍历，不多赘述。遍历顺序是先数组，数组中有链表/红黑树时，遍历它们。**所以插入顺序和遍历顺序会不一致。**
+
+## 插入
+
+```java
+public V put(K key, V value) {
+    return putVal(hash(key), key, value, false, true);
+}
+
+final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+               boolean evict) {
+    Node<K,V>[] tab; Node<K,V> p; int n, i;
+    // 如果table还未被初始化，先初始化
+    if ((tab = table) == null || (n = tab.length) == 0)
+        n = (tab = resize()).length;
+    // 如果table[i]没有节点，新生成一个节点
+    if ((p = tab[i = (n - 1) & hash]) == null)
+        tab[i] = newNode(hash, key, value, null);
+    else {
+        Node<K,V> e; K k;
+        // 如果键的值以及节点 hash 等于链表中的第一个键值对节点时，则将 e 指向该键值对
+        if (p.hash == hash &&
+            ((k = p.key) == key || (key != null && key.equals(k))))
+            e = p;
+            
+        // 如果桶中的引用类型为 TreeNode，则调用红黑树的插入方法
+        else if (p instanceof TreeNode)  
+            e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
+        else {
+            // 对链表进行遍历，并统计链表长度
+            for (int binCount = 0; ; ++binCount) {
+                // 链表中不包含要插入的键值对节点时，则将该节点接在链表的最后
+                if ((e = p.next) == null) {
+                    p.next = newNode(hash, key, value, null);
+                    // 如果链表长度大于或等于树化阈值，则进行树化操作
+                    if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                        treeifyBin(tab, hash);
+                    break;
+                }
+                
+                // 条件为 true，表示当前链表包含要插入的键值对，终止遍历
+                if (e.hash == hash &&
+                    ((k = e.key) == key || (key != null && key.equals(k))))
+                    break;
+                p = e;
+            }
+        }
+        
+        // 判断要插入的键值对是否存在 HashMap 中
+        if (e != null) { // existing mapping for key
+            V oldValue = e.value;
+            // onlyIfAbsent 表示是否仅在 oldValue 为 null 的情况下更新键值对的值
+            if (!onlyIfAbsent || oldValue == null)
+                e.value = value;
+            afterNodeAccess(e);
+            return oldValue;
+        }
+    }
+    ++modCount;
+    // 键值对数量超过阈值时，则进行扩容
+    if (++size > threshold)
+        resize();
+    afterNodeInsertion(evict);
+    return null;
+}
+```
+
+## 扩容
+
+1. 计算新桶数组的容量 newCap 和新阈值 newThr
+2. 根据计算出的 newCap 创建新的桶数组，桶数组 table 也是在这里进行初始化的
+3. 将键值对节点重新映射到新的桶数组里。如果节点是 TreeNode 类型，则需要拆分红黑树。如果是普通节点，则节点按原顺序进行分组。
+
+```java
+final Node<K,V>[] resize() {
+    Node<K,V>[] oldTab = table;
+    int oldCap = (oldTab == null) ? 0 : oldTab.length;
+    int oldThr = threshold;
+    int newCap, newThr = 0;
+    // 如果 table 不为空，表明已经初始化过了
+    if (oldCap > 0) {
+        // 当 table 容量超过容量最大值，则不再扩容
+        if (oldCap >= MAXIMUM_CAPACITY) {
+            threshold = Integer.MAX_VALUE;
+            return oldTab;
+        } 
+        // 按旧容量和阈值的2倍计算新容量和阈值的大小
+        else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
+                 oldCap >= DEFAULT_INITIAL_CAPACITY)
+            newThr = oldThr << 1; // double threshold
+    } else if (oldThr > 0) // initial capacity was placed in threshold
+        /*
+         * 初始化时，将 threshold 的值赋值给 newCap，
+         * HashMap 使用 threshold 变量暂时保存 initialCapacity 参数的值
+         */ 
+        newCap = oldThr;
+    else {               // zero initial threshold signifies using defaults
+        /*
+         * 调用无参构造方法时，桶数组容量为默认容量，
+         * 阈值为默认容量与默认负载因子乘积
+         */
+        newCap = DEFAULT_INITIAL_CAPACITY;
+        newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
+    }
+    
+    // newThr 为 0 时，按阈值计算公式进行计算
+    if (newThr == 0) {
+        float ft = (float)newCap * loadFactor;
+        newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
+                  (int)ft : Integer.MAX_VALUE);
+    }
+    threshold = newThr;
+    // 创建新的桶数组，桶数组的初始化也是在这里完成的
+    Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
+    table = newTab;
+    if (oldTab != null) {
+        // 如果旧的桶数组不为空，则遍历桶数组，并将键值对映射到新的桶数组中
+        for (int j = 0; j < oldCap; ++j) {
+            Node<K,V> e;
+            if ((e = oldTab[j]) != null) {
+                oldTab[j] = null;
+                if (e.next == null)
+                    newTab[e.hash & (newCap - 1)] = e;
+                else if (e instanceof TreeNode)
+                    // 重新映射时，需要对红黑树进行拆分
+                    ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
+                else { // preserve order
+                    Node<K,V> loHead = null, loTail = null;
+                    Node<K,V> hiHead = null, hiTail = null;
+                    Node<K,V> next;
+                    // 遍历链表，并将链表节点按原顺序进行分组
+                    do {
+                        next = e.next;
+                        if ((e.hash & oldCap) == 0) {
+                            if (loTail == null)
+                                loHead = e;
+                            else
+                                loTail.next = e;
+                            loTail = e;
+                        }
+                        else {
+                            if (hiTail == null)
+                                hiHead = e;
+                            else
+                                hiTail.next = e;
+                            hiTail = e;
+                        }
+                    } while ((e = next) != null);
+                    // 将分组后的链表映射到新桶中
+                    if (loTail != null) {
+                        loTail.next = null;
+                        newTab[j] = loHead;
+                    }
+                    if (hiTail != null) {
+                        hiTail.next = null;
+                        newTab[j + oldCap] = hiHead;
+                    }
+                }
+            }
+        }
+    }
+    return newTab;
+}
+```
+
+## 链表树化、红黑树链化与拆分
+
+### 键值比较
+
+HashMap 是做了三步处理，确保可以比较出两个键的大小，如下：
+
+1. 比较键与键之间 hash 的大小，如果 hash 相同，继续往下比较
+2. 检测键类是否实现了 Comparable 接口，如果实现调用 compareTo 方法进行比较
+3. 如果仍未比较出大小，就需要进行仲裁了，仲裁方法为 tieBreakOrder（大家自己看源码吧）
+
+### 红黑树拆分
+
+扩容后，普通节点需要重新映射，红黑树节点也不例外。按照一般的思路，我们可以先把红黑树转成链表，之后再重新映射链表即可。这种处理方式是大家比较容易想到的，但这样做会损失一定的效率。不同于上面的处理方式，HashMap 实现的思路则是上好佳（上好佳请把广告费打给我）。如上节所说，在将普通链表转成红黑树时，HashMap 通过两个额外的引用 next 和 prev 保留了原链表的节点顺序。这样再对红黑树进行重新映射时，完全可以按照映射链表的方式进行。这样就避免了将红黑树转成链表后再进行映射，无形中提高了效率。
+
+### 红黑树链化
+
+前面说过，红黑树中仍然保留了原链表节点顺序。有了这个前提，再将红黑树转成链表就简单多了，仅需将 TreeNode 链表转成 Node 类型的链表即可。
+
+## transient 
+
+如果大家细心阅读 HashMap 的源码，会发现桶数组 table 被申明为 transient。transient 表示易变的意思，在 Java 中，被该关键字修饰的变量不会被默认的序列化机制序列化。我们再回到源码中，考虑一个问题：桶数组 table 是 HashMap 底层重要的数据结构，不序列化的话，别人还怎么还原呢？
+
+这里简单说明一下吧，HashMap 并没有使用默认的序列化机制，而是通过实现`readObject/writeObject`两个方法自定义了序列化的内容。这样做是有原因的，试问一句，HashMap 中存储的内容是什么？不用说，大家也知道是`键值对`。所以只要我们把键值对序列化了，我们就可以根据键值对数据重建 HashMap。有的朋友可能会想，序列化 table 不是可以一步到位，后面直接还原不就行了吗？这样一想，倒也是合理。但序列化 talbe 存在着两个问题：
+
+1. table 多数情况下是无法被存满的，序列化未使用的部分，浪费空间
+2. 同一个键值对在不同 JVM 下，所处的桶位置可能是不同的，在不同的 JVM 下反序列化 table 可能会发生错误。
+
+以上两个问题中，第一个问题比较好理解，第二个问题解释一下。HashMap 的`get/put/remove`等方法第一步就是根据 hash 找到键所在的桶位置，但如果键没有覆写 hashCode 方法，计算 hash 时最终调用 Object 中的 hashCode 方法。但 Object 中的 hashCode 方法是 native 型的，不同的 JVM 下，可能会有不同的实现，产生的 hash 可能也是不一样的。也就是说同一个键在不同平台下可能会产生不同的 hash，此时再对在同一个 table 继续操作，就会出现问题。
+
+综上所述，大家应该能明白 HashMap 不序列化 table 的原因了。

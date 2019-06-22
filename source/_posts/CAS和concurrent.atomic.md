@@ -3,6 +3,8 @@ title: CAS和concurrent.atomic
 date: 2019-6-21 21:13:16
 tags: [面试,Java]
 categories: [面试,Java]
+photos:
+  - "https://github.com/CherryKeinz/cherrykeinz.github.io/blob/master/images/cover/1.jpg?raw=true"
 description: CAS和并发包中的原子操作类(Atomic系列)
 ---
 
@@ -120,5 +122,6 @@ public final int getAndAddInt(Object o, long offset, int delta) {
 ```
 
 
-    
---------------------- 
+​    
+
+---------------------
