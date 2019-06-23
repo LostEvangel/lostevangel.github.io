@@ -15,4 +15,4 @@ date: 2017-11-22 15:16:20
 博客搭建采用Hexo+NexT.Mist主题
 
 联系方式：
-Email:kai_keinz@163.com
+Email:cherry_wangk@163.com

@@ -3,12 +3,14 @@ title: Hexo nexT的一些玩法（转载+总结）
 date: 2017-11-22 15:50:14
 tags: [Hexo]
 categories: Hexo
+photos:
+  - "https://github.com/CherryKeinz/cherrykeinz.github.io/blob/master/images/cover/1.jpg?raw=true"
 description: Hexo真是太棒了
 ---
 
-## 基础篇
+# 基础篇
 
-### 1. 常用命令
+## 1. 常用命令
 
 ```
 hexo new "HelloWorld" #新建文章
@@ -94,11 +96,11 @@ hexo d #部署 #可与hexo g合并为 hexo d -g ```
 }
  ```
 
-### 2. 修改文章底部的那个带#号的标签
+## 2. 修改文章底部的那个带#号的标签
 修改模板/themes/next/layout/_macro/post.swig，搜索 rel="tag">#，将 # 换成
 /` <i class="fa fa-tag"></i> `/
 
-### 3. 在每篇文章末尾统一添加“本文结束”标记
+## 3. 在每篇文章末尾统一添加“本文结束”标记
 在路径 \themes\next\layout\_macro 中新建 passage-end-tag.swig 文件,并添加以下内容：
 ```HTML 
 <div>
@@ -110,7 +112,7 @@ hexo d #部署 #可与hexo g合并为 hexo d -g ```
 接着打开\themes\next\layout\_macro\post.swig文件，在post-body 之后， post-footer 之前添加如下画红色部分代码（post-footer之前两个DIV）：
 ![blog1.png](/image/blog1.png)
 
-### 3. 修改网页底部的桃心
+## 4. 修改网页底部的桃心
 还是打开themes/next/layout/_partials/footer.swig，找到： 
 ```  <span class="with-love">
     <i class="fa fa-heart"></i>
@@ -130,7 +132,10 @@ http://www.jianshu.com/p/c23902f93558
 http://blog.csdn.net/qq_33699981/article/details/72716951
 http://playingfingers.com/2016/03/26/build-a-blog/
 https://segmentfault.com/a/1190000003946969
-### 4.添加网页音乐播放器功能
+
+
+
+## 5.添加网页音乐播放器功能
 
 #### Download Aplayer 
 
@@ -196,3 +201,54 @@ copy<link rel="stylesheet" href="/dist/APlayer.min.css">
 添加到`<body itemscope ...>`后面就行，即在`<body></body>`里面。
 
 重新生成，访问页面，就能看到左下角的音乐播放器了。
+
+## 6.搞怪网页标题
+
+本章节参考 <http://yearito.cn/posts/hexo-advanced-settings.html>
+
+themes\next\layout\_custom\custom.swig
+
+```
+{# 搞怪网页标题 #}
+{% if theme.title_trick.enable %}
+  <script>
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        document.title = '{{ theme.title_trick.leave }}' + OriginTitile;
+        clearTimeout(titleTime);
+      } else {
+        document.title = '{{ theme.title_trick.enter }}' + OriginTitile;
+        titleTime = setTimeout(function() {
+          document.title = OriginTitile;
+        }, 2000);
+      }
+    });
+  </script>
+{% endif %}
+```
+
+themes\next\layout\_layout.swig
+
+```
+      ...
+      {% include '_third-party/exturl.swig' %}
+      {% include '_third-party/bookmark.swig' %}
+      {% include '_third-party/copy-code.swig' %}
+
++     {% include '_custom/custom.swig' %}
+    </body>
+  </html>
+```
+
+在主题配置文件中添加以下代码：
+
+```
+# a trick on website title
+title_trick:
+  enable: true
+  leave: "啊咧?真由氏的怀表停了呢~"
+  enter: "这一切都是命运石之门的选择！"
+```
+

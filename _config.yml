@@ -5,7 +5,9 @@
 # Site
 title: 石头门的选择
 subtitle:
-description: Java |Python |el psy congroo
+description: 如果把整个太平洋的水倒出，</br>也浇不熄我对你爱情的火。</br>
+  整个太平洋的水全部倒得出吗？</br>
+  不行。</br>所以我并不爱你。
 author: Keinz
 language: zh-CN
 timezone:
@@ -16,7 +18,7 @@ url: CherryKeinz.github.io
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
-avatar: /avatar/avatar.gif
+avatar: /avatar/avatar.png
 
 # Directory
 source_dir: source
@@ -88,3 +90,15 @@ search:
   field: post
   format: html
   limit: 10000
+
+
+douban:
+  user: https://www.douban.com/people/188558286/ # 个人豆瓣ID
+  builtin: true
+  book:
+    title: '我的书单'
+  movie:
+    title: '我的电影'
+  game:
+    title: '我的游戏'
+  timeout: 10000
