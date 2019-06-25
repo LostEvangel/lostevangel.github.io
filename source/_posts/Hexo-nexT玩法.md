@@ -20,15 +20,16 @@ hexo p == hexo publish
 hexo g == hexo generate #生成
 hexo s == hexo server #启动服务预览
 hexo d == hexo deploy #部署
-hexo d #部署 #可与hexo g合并为 hexo d -g ```
+hexo d #部署 #可与hexo g合并为 hexo d -g
+```
 
 
-### 2. 文章中插入图片
+## 2. 文章中插入图片
 
 对于hexo，有两种方式： 
 使用本地路径：在hexo/source目录下新建一个img文件夹，将图片放入该文件夹下，插入图片时链接即为/img/图片名称。 
 使用微博图床，地址 http://weibotuchuang.sinaapp.com/ ，将图片拖入区域中，会生成图片的URL，这就是链接地址。
-### 3. 添加分页、标签页面
+## 3. 添加分页、标签页面
 
  - 新建
 命令：
@@ -42,18 +43,21 @@ hexo d #部署 #可与hexo g合并为 hexo d -g ```
 
 > tags: [hexo,next]
 
-### 4. 引入第三方服务 
+## 4. 引入第三方服务 
 
 参考 : http://theme-next.iissnan.com/third-party-services.html#swfitype
 
- 1. 加入分享功能
-在主题配置文件中，jiathis: true
+ ### 1. 加入分享功能
 
- 2. 加入评论功能
-待续
+  在主题配置文件中，jiathis: true
 
- 3. 加入站点内容搜索功能
-1) 安装 hexo-generator-searchdb，在站点的根目录下执行以下命令：
+ ### 2.  加入评论功能
+
+  待续
+
+ ### 3.  加入站点内容搜索功能
+
+  1) 安装 hexo-generator-searchdb，在站点的根目录下执行以下命令：
 
  > $ npm install hexo-generator-searchdb --save
 
@@ -65,24 +69,25 @@ hexo d #部署 #可与hexo g合并为 hexo d -g ```
     field: post
     format: html
     limit: 10000
- ```
+```
  3) 编辑 主题配置文件，启用本地搜索功能：
 
  ```local_search:
-    enable: true```
-    
+    enable: true
+ ```
+
  4. 数据统计
 
  待续
 
 
-## 个性化 ([参考](http://blog.csdn.net/qq_33699981/article/details/72716951))
+# 个性化 ([参考](http://blog.csdn.net/qq_33699981/article/details/72716951))
 
-### 1. 修改文章内链接文本样式（待考证）
+## 1. 修改文章内链接文本样式（待考证）
 
 修改文件 themes\next\source\css\_common\components\post\post.styl，在末尾添加如下css样式，：
 
-​```CSS
+```CSS
 // 文章内链接文本样式
 .post-body p a{
   color: #0593d3;
@@ -94,7 +99,7 @@ hexo d #部署 #可与hexo g合并为 hexo d -g ```
     border-bottom: 1px solid #fc6423;
   }
 }
- ```
+```
 
 ## 2. 修改文章底部的那个带#号的标签
 修改模板/themes/next/layout/_macro/post.swig，搜索 rel="tag">#，将 # 换成
@@ -114,13 +119,13 @@ hexo d #部署 #可与hexo g合并为 hexo d -g ```
 
 ## 4. 修改网页底部的桃心
 还是打开themes/next/layout/_partials/footer.swig，找到： 
-```  <span class="with-love">
+​```  <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>```
 然后还是在[图标库](http://fontawesome.io/icons/)中找到你自己喜欢的图标，然后修改画红线的部分就可以了。
-### 4. 添加顶部加载条
+## 5. 添加顶部加载条
 打开/themes/next/layout/_partials/head.swig文件，修改为 :
-```
+ ```
 <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
@@ -132,6 +137,7 @@ http://www.jianshu.com/p/c23902f93558
 http://blog.csdn.net/qq_33699981/article/details/72716951
 http://playingfingers.com/2016/03/26/build-a-blog/
 https://segmentfault.com/a/1190000003946969
+ ```
 
 
 
@@ -145,7 +151,7 @@ https://segmentfault.com/a/1190000003946969
 
 新建`themes\next\source\dist\music.js`文件，添加内容：
 
-```
+ ```
 const ap = new APlayer({
     container: document.getElementById('aplayer'),
     fixed: true,
@@ -177,7 +183,7 @@ const ap = new APlayer({
       }
     ]
 });
-```
+ ```
 
 源码中对应的参数解释，这边都有： [Aplayer 中文文档](https://aplayer.js.org/#/zh-Hans/)
 
@@ -206,9 +212,10 @@ copy<link rel="stylesheet" href="/dist/APlayer.min.css">
 
 本章节参考 <http://yearito.cn/posts/hexo-advanced-settings.html>
 
-themes\next\layout\_custom\custom.swig
-
 ```
+themes\next\layout\_custom\custom.swig
+```
+
 {# 搞怪网页标题 #}
 {% if theme.title_trick.enable %}
   <script>
@@ -252,3 +259,57 @@ title_trick:
   enter: "这一切都是命运石之门的选择！"
 ```
 
+## 7. 豆瓣阅读 / 电影 / 游戏
+
+```
+ npm install hexo-douban --save
+```
+
+核心配置文件_config.yml：
+
+```
+douban:
+  user:  # 个人豆瓣ID
+  builtin: false  #是否每次hexo d -g时都自动hexo douban
+  book:
+    title: 'This is my book title'
+    quote: 'This is my book quote'
+  movie:
+    title: 'This is my movie title'
+    quote: 'This is my movie quote'
+  game:
+    title: 'This is my game title'
+    quote: 'This is my game quote'
+  timeout: 10000
+```
+
+在主题配置文件themes\next\_config.yml中：
+
+```
+menu:
+    home: / || home
+    tags: /tags/ || tags
+    categories: /categories/ || th
+    archives: /archives/ || tasks
++   books: /books/ || book  
++   movies: /movies/ || video-camera  
++   games: /games/ || gamepad
+```
+
+在语言包中新增菜单中文themes\next\language\zh_CN.yml：
+
+```
+  menu:
+    home: 首页
+    archives: 归档
+    categories: 分类
+    tags: 标签
++   movies: 电影
++   books: 读书
++   games: 游戏
+```
+
+
+```
+
+```
