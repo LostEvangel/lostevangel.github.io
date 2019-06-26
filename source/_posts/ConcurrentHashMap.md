@@ -14,7 +14,7 @@ description: ConcurrentHashMap的put和扩容，HashMap的put、扩容、链树�
 
 # ConcurrentHashMap
 
-## put方法
+## 1. put方法
 
 <https://www.jianshu.com/p/0fb89aefac66>
 
@@ -121,7 +121,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 
 
 
-## 扩容transfer
+## 2. 扩容transfer
 
 <https://www.jianshu.com/p/2829fe36a8dd>
 
@@ -320,7 +320,7 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
 }
 ```
 
-## helpTransfer方法
+## 3. helpTransfer方法
 
 如果索引到的节点的 hash 为-1，说明当前节点处于移动状态（或者说是其他线程正在对 f 节点进行转移操作。这里主要是靠 ForwardingNode 节点来检测，因为ForwardingNode 中有指向nextTable的指针，可以得到nextTable。这个线程就可以先去帮助扩容。
 
@@ -352,7 +352,7 @@ final Node<K,V>[] helpTransfer(Node<K,V>[] tab, Node<K,V> f) {
 
 底层数据结构`数组+链表+红黑树`
 
-## 初始化时tableSizeFor方法
+## 1. 初始化时tableSizeFor方法
 
 找到大于或等于 cap 的最小2的幂的数作为table的size。
 
@@ -371,7 +371,7 @@ static final int tableSizeFor(int cap) {
 }
 ```
 
-## 查找
+## 2. 查找
 
 `(n - 1)& hash`相当于取这个数的二进制的n-1位，得到的就是映射到table的位置索引。
 
@@ -409,11 +409,11 @@ final Node<K,V> getNode(int hash, Object key) {
 }
 ```
 
-## 遍历
+## 3. 遍历
 
 用Iterator迭代器遍历，不多赘述。遍历顺序是先数组，数组中有链表/红黑树时，遍历它们。**所以插入顺序和遍历顺序会不一致。**
 
-## 插入
+## 4. 插入
 
 ```java
 public V put(K key, V value) {
@@ -478,7 +478,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 }
 ```
 
-## 扩容
+## 5. 扩容
 
 1. 计算新桶数组的容量 newCap 和新阈值 newThr
 2. 根据计算出的 newCap 创建新的桶数组，桶数组 table 也是在这里进行初始化的
@@ -576,9 +576,9 @@ final Node<K,V>[] resize() {
 }
 ```
 
-## 链表树化、红黑树链化与拆分
+## 6. 链表树化、红黑树链化与拆分
 
-### 键值比较
+### 6.1 键值比较
 
 HashMap 是做了三步处理，确保可以比较出两个键的大小，如下：
 
@@ -586,15 +586,15 @@ HashMap 是做了三步处理，确保可以比较出两个键的大小，如下
 2. 检测键类是否实现了 Comparable 接口，如果实现调用 compareTo 方法进行比较
 3. 如果仍未比较出大小，就需要进行仲裁了，仲裁方法为 tieBreakOrder（大家自己看源码吧）
 
-### 红黑树拆分
+### 6.2 红黑树拆分
 
 扩容后，普通节点需要重新映射，红黑树节点也不例外。按照一般的思路，我们可以先把红黑树转成链表，之后再重新映射链表即可。这种处理方式是大家比较容易想到的，但这样做会损失一定的效率。不同于上面的处理方式，HashMap 实现的思路则是上好佳（上好佳请把广告费打给我）。如上节所说，在将普通链表转成红黑树时，HashMap 通过两个额外的引用 next 和 prev 保留了原链表的节点顺序。这样再对红黑树进行重新映射时，完全可以按照映射链表的方式进行。这样就避免了将红黑树转成链表后再进行映射，无形中提高了效率。
 
-### 红黑树链化
+### 6.3 红黑树链化
 
 前面说过，红黑树中仍然保留了原链表节点顺序。有了这个前提，再将红黑树转成链表就简单多了，仅需将 TreeNode 链表转成 Node 类型的链表即可。
 
-## transient 
+## 7. transient 
 
 如果大家细心阅读 HashMap 的源码，会发现桶数组 table 被申明为 transient。transient 表示易变的意思，在 Java 中，被该关键字修饰的变量不会被默认的序列化机制序列化。我们再回到源码中，考虑一个问题：桶数组 table 是 HashMap 底层重要的数据结构，不序列化的话，别人还怎么还原呢？
 

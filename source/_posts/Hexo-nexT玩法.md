@@ -6,6 +6,7 @@ categories: Hexo
 photos:
   - "https://github.com/CherryKeinz/cherrykeinz.github.io/blob/master/images/cover/1.jpg?raw=true"
 description: Hexo真是太棒了
+
 ---
 
 # 基础篇
@@ -31,17 +32,17 @@ hexo d #部署 #可与hexo g合并为 hexo d -g
 使用微博图床，地址 http://weibotuchuang.sinaapp.com/ ，将图片拖入区域中，会生成图片的URL，这就是链接地址。
 ## 3. 添加分页、标签页面
 
- - 新建
+新建
 命令：
 
-> hexo new page tags # tags可替换成其他
+`hexo new page tags # tags可替换成其他`
 
-输入命令后，在/source下会新生成一个新的文件夹tags，在该文件夹下会有一个index.md文件。
-在上步新生成的myBlog/source/tags/index.md中添加type: "tags"，index.md文件内容如下：
+输入命令后，在`/source`下会新生成一个新的文件夹tags，在该文件夹下会有一个index.md文件。
+在上步新生成的`myBlog/source/tags/index.md`中添加`type: "tags"`，`index.md`文件内容如下：
 设置具体文章的tags
-当要为某一篇文章添加标签，只需在/source/_post目录下的具体文章的tags中添加标签即可，如：
+当要为某一篇文章添加标签，只需在`/source/_post`目录下的具体文章的tags中添加标签即可，如：
 
-> tags: [hexo,next]
+`tags: [hexo,next]`
 
 ## 4. 引入第三方服务 
 
@@ -49,7 +50,7 @@ hexo d #部署 #可与hexo g合并为 hexo d -g
 
  ### 1. 加入分享功能
 
-  在主题配置文件中，jiathis: true
+在主题配置文件中，`jiathis: true`
 
  ### 2.  加入评论功能
 
@@ -59,7 +60,7 @@ hexo d #部署 #可与hexo g合并为 hexo d -g
 
   1) 安装 hexo-generator-searchdb，在站点的根目录下执行以下命令：
 
- > $ npm install hexo-generator-searchdb --save
+`$ npm install hexo-generator-searchdb --save`
 
  2) 编辑 站点配置文件，新增以下内容到任意位置：
 
@@ -72,22 +73,25 @@ hexo d #部署 #可与hexo g合并为 hexo d -g
 ```
  3) 编辑 主题配置文件，启用本地搜索功能：
 
- ```local_search:
-    enable: true
- ```
+```
+local_search:
+enable: true
+```
 
  4. 数据统计
 
- 待续
+##  5. 取消“文章目录”对标题的自动编号
+
+修改主题配置文件那里的`toc:number`为`false`
 
 
 # 个性化 ([参考](http://blog.csdn.net/qq_33699981/article/details/72716951))
 
 ## 1. 修改文章内链接文本样式（待考证）
 
-修改文件 themes\next\source\css\_common\components\post\post.styl，在末尾添加如下css样式，：
+修改文件 `themes\next\source\css\_common\components\post\post.styl`，在末尾添加如下css样式：
 
-```CSS
+```css
 // 文章内链接文本样式
 .post-body p a{
   color: #0593d3;
@@ -102,56 +106,65 @@ hexo d #部署 #可与hexo g合并为 hexo d -g
 ```
 
 ## 2. 修改文章底部的那个带#号的标签
-修改模板/themes/next/layout/_macro/post.swig，搜索 rel="tag">#，将 # 换成
+修改模板`/themes/next/layout/_macro/post.swig`，搜索 `rel="tag">#`，将 # 换成
 /` <i class="fa fa-tag"></i> `/
 
 ## 3. 在每篇文章末尾统一添加“本文结束”标记
-在路径 \themes\next\layout\_macro 中新建 passage-end-tag.swig 文件,并添加以下内容：
-```HTML 
+在路径` \themes\next\layout\_macro` 中新建 `passage-end-tag.swig` 文件,并添加以下内容：
+
+```
 <div>
     {% if not is_index %}
         <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
     {% endif %}
 </div>
 ```
-接着打开\themes\next\layout\_macro\post.swig文件，在post-body 之后， post-footer 之前添加如下画红色部分代码（post-footer之前两个DIV）：
+
+接着打开`\themes\next\layout\_macro\post.swig`文件，在post-body 之后， post-footer 之前添加如下画红色部分代码（post-footer之前两个DIV）：
 ![blog1.png](/image/blog1.png)
 
 ## 4. 修改网页底部的桃心
-还是打开themes/next/layout/_partials/footer.swig，找到： 
-​```  <span class="with-love">
+还是打开`themes/next/layout/_partials/footer.swig`，找到： 
+
+```html
+<span class="with-love">
     <i class="fa fa-heart"></i>
-  </span>```
+</span>
+```
+
 然后还是在[图标库](http://fontawesome.io/icons/)中找到你自己喜欢的图标，然后修改画红线的部分就可以了。
 ## 5. 添加顶部加载条
-打开/themes/next/layout/_partials/head.swig文件，修改为 :
- ```
+打开`/themes/next/layout/_partials/head.swig`文件，修改为 :
+
+```html
 <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
 <link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
-<meta name="theme-color" content="{{ theme.android_chrome_color }}">```
+<meta name="theme-color" content="{{ theme.android_chrome_color }}">
+```
+
 参考资料： 
 http://www.jianshu.com/p/c23902f93558
 http://blog.csdn.net/qq_33699981/article/details/72716951
 http://playingfingers.com/2016/03/26/build-a-blog/
 https://segmentfault.com/a/1190000003946969
- ```
+
 
 
 
 ## 5.添加网页音乐播放器功能
 
-#### Download Aplayer 
+### Download Aplayer 
 
 点击访问Aplayer源码：[GitHub Aplayer](https://github.com/MoePlayer/APlayer)。下载到本地，解压后将`dist`文件夹复制到`themes\next\source`文件夹下。
 
-#### 修改music.js
+### 修改music.js
 
 新建`themes\next\source\dist\music.js`文件，添加内容：
 
- ```
+```
 const ap = new APlayer({
     container: document.getElementById('aplayer'),
     fixed: true,
@@ -183,7 +196,7 @@ const ap = new APlayer({
       }
     ]
 });
- ```
+```
 
 源码中对应的参数解释，这边都有： [Aplayer 中文文档](https://aplayer.js.org/#/zh-Hans/)
 
@@ -191,7 +204,7 @@ const ap = new APlayer({
 
 注：由于该外链网站没有歌词链接，我这边没有进行配置，所以播放器在播放音乐时点击歌词是没有显示的。
 
-#### _layout.swig
+### _layout.swig
 
 打开`themes\next\layout\_layout.swig`文件，将
 
@@ -208,7 +221,8 @@ copy<link rel="stylesheet" href="/dist/APlayer.min.css">
 
 重新生成，访问页面，就能看到左下角的音乐播放器了。
 
-## 6.搞怪网页标题
+
+## 6. 搞怪网页标题
 
 本章节参考 <http://yearito.cn/posts/hexo-advanced-settings.html>
 
@@ -216,6 +230,7 @@ copy<link rel="stylesheet" href="/dist/APlayer.min.css">
 themes\next\layout\_custom\custom.swig
 ```
 
+```
 {# 搞怪网页标题 #}
 {% if theme.title_trick.enable %}
   <script>
@@ -236,7 +251,9 @@ themes\next\layout\_custom\custom.swig
 {% endif %}
 ```
 
+```
 themes\next\layout\_layout.swig
+```
 
 ```
       ...
@@ -257,6 +274,7 @@ title_trick:
   enable: true
   leave: "啊咧?真由氏的怀表停了呢~"
   enter: "这一切都是命运石之门的选择！"
+
 ```
 
 ## 7. 豆瓣阅读 / 电影 / 游戏
@@ -265,7 +283,7 @@ title_trick:
  npm install hexo-douban --save
 ```
 
-核心配置文件_config.yml：
+核心配置文件`_config.yml`：
 
 ```
 douban:
@@ -283,7 +301,7 @@ douban:
   timeout: 10000
 ```
 
-在主题配置文件themes\next\_config.yml中：
+在主题配置文件`themes\next\_config.yml`中：
 
 ```
 menu:
@@ -296,7 +314,7 @@ menu:
 +   games: /games/ || gamepad
 ```
 
-在语言包中新增菜单中文themes\next\language\zh_CN.yml：
+在语言包中新增菜单中文`themes\next\language\zh_CN.yml`：
 
 ```
   menu:
@@ -310,6 +328,3 @@ menu:
 ```
 
 
-```
-
-```
