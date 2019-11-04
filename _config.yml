@@ -81,7 +81,7 @@ theme: next
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: git@github.com:CherryKeinz/cherrykeinz.github.io
+  repo: git@github.com:LostCherry/lostcherry.github.io.git
   branch: master
 
 #search
