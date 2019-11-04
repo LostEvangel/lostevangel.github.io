@@ -4,7 +4,7 @@ date: 2019-06-13 22:41:08
 tags: [Java,并发编程]
 categories: Java
 photos:
-  - "https://github.com/CherryKeinz/cherrykeinz.github.io/blob/master/images/cover/1.jpg?raw=true"
+  - "https://github.com/LostCherry/lostcherry.github.io/blob/master/images/cover/1.jpg?raw=true"
 description: 从源码角度彻底理解ReentrantLock(重入锁)
 ---
 

@@ -4,7 +4,7 @@ date: 2019-10-12 20:45:04
 tags: [面试,Java]
 categories: [面试,Java]
 photos:
-  - "https://github.com/CherryKeinz/cherrykeinz.github.io/blob/master/images/cover/1.jpg?raw=true"
+  - "https://github.com/LostCherry/lostcherry.github.io/blob/master/images/cover/1.jpg?raw=true"
 description: JDK动态代理及实现
 ---
 

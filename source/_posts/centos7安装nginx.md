@@ -4,7 +4,7 @@ date: 2019-06-25 13:31:04
 tags: [Nginx]
 categories: [Nginx]
 photos:
-  - "https://github.com/CherryKeinz/cherrykeinz.github.io/blob/master/images/cover/3.jpg?raw=true"
+  - "https://github.com/LostCherry/lostcherry.github.io/blob/master/images/cover/3.jpg?raw=true"
 description: CentOS7通過安裝包的方式安裝Nginx
 ---
 

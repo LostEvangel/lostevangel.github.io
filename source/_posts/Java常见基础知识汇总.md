@@ -4,7 +4,7 @@ date: 2019-06-25 20:07:29
 tags: [面试,Java]
 categories: [面试,Java]
 photos:
-  - "https://github.com/CherryKeinz/cherrykeinz.github.io/blob/master/images/cover/1.jpg?raw=true"
+  - "https://github.com/LostCherry/lostcherry.github.io/blob/master/images/cover/1.jpg?raw=true"
 description: Java面试和笔试中遇到的一些基础知识，总是忘，记录一下用以复习。
 ---
 
