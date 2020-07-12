@@ -4,7 +4,7 @@ date: 2019-10-12 20:45:04
 tags: [面试,Java]
 categories: [面试,Java]
 photos:
-  - "https://github.com/LostCherry/lostcherry.github.io/blob/master/images/cover/1.jpg?raw=true"
+  - "https://github.com/LostEvangel/LostEvangel.github.io/blob/master/image/cover/1.jpg?raw=true"
 description: JDK动态代理及实现
 ---
 

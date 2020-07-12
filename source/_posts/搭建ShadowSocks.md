@@ -4,7 +4,7 @@ date: 2018-9-21 18:55:35
 tags: [ShadowSocks]
 categories: 科学上网
 photos:
-  - "https://github.com/LostCherry/lostcherry.github.io/blob/master/images/cover/3.jpg?raw=true"
+  - "https://github.com/LostEvangel/LostEvangel.github.io/blob/master/image/cover/3.jpg?raw=true"
 description: 科学上网必备
 ---
 

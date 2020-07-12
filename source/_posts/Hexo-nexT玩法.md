@@ -4,7 +4,7 @@ date: 2017-11-22 15:50:14
 tags: [Hexo]
 categories: Hexo
 photos:
-  - "https://github.com/LostCherry/lostcherry.github.io/blob/master/images/cover/1.jpg?raw=true"
+  - "https://github.com/LostEvangel/LostEvangel.github.io/blob/master/image/cover/1.jpg?raw=true"
 description: Hexo真是太棒了
 
 ---
