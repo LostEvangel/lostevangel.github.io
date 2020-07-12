@@ -1,0 +1,95 @@
+// 背景图
+body {
+  +desktop() {
+    background: url(/images/background.jpg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: 100% 100%;
+    background-size: cover;
+  }
+}
+// 主页文章添加阴影效果，并居中
+article {
+  +desktop() {
+    margin-top: 60px;
+    margin-bottom: 60px;
+    padding: 25px;
+    background: #fff;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+  }
+}
+.posts-expand .post-body {
+  +mobile() { text-align: left; }
+}
+.post-header  .post-title {
+	text-align: center;
+}
+.post-header .post-meta{
+	text-align: center;
+}
+
+div[itemprop="articleBody"] {
+	font-style: italic;
+}
+div[itemprop="articleBody"] >* {
+  font-style: normal;
+}
+
+// 设置圆形头像
+.site-author-image {
+  display: block;
+  margin: 0 auto;
+  margin-top 30%;
+  padding: $site-author-image-padding;
+  max-width: $site-author-image-width;
+  height: $site-author-image-height;
+  border: $site-author-image-border-width solid $site-author-image-border-color;
+  border-radius: 60%;
+  transition: 2.5s all;
+}
+
+
+.site-author-name {
+  margin: $site-author-name-margin;
+  text-align: $site-author-name-align;
+  color: $site-author-name-color;
+  font-weight: $site-author-name-weight;
+}
+
+.site-description {
+  margin-top: $site-description-margin-top;
+  text-align: $site-description-align;
+  font-size: $site-description-font-size;
+  color: $site-description-color;
+}
+
+
+//窗口波动效果相关样式
+if hexo-config('wobble')  {
+  .sidebar {
+    box-shadow: none;
+  }
+
+  .wobbleTransparentBK{
+    background-color: rgba(0,0,0,0) !important;
+  }
+
+  .wobbleTransparentLine{
+    border-color: rgba(0,0,0,0) !important;
+  }
+
+  //Next.Muse中为Header和Footer添加背景色
+  #header, #footer {
+    background-color: rgb(245, 245, 245);
+  }
+
+  //防止sidebar和footer同时开启动效时堆叠异常
+  #sidebar, header {
+    z-index: 1 !important;
+  }
+
+  //防止挡住页末文章的阅读全文按钮
+  .main {
+    padding-bottom: 200px;
+  }
+}
