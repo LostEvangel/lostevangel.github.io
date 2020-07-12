@@ -6,7 +6,7 @@ categories: Hexo
 description: Hexo如何在github上备份，在不同电脑上同步能用到。
 ---
 
-## 换机之前的步骤
+## 1. 换机之前的步骤
 
 1. 克隆项目到本地
 ```
@@ -42,7 +42,27 @@ git commit -m "注释"
 git push origin hexo
 ```
 
-## 换机之后的步骤
+### 可能出现的问题
+
+#### 1. themes/next无法提交
+
+[Hexo + Github page博客 themes/next 文件夹因存在.git而无法提交到git的解决办法]: https://blog.csdn.net/diaoliyi1350/article/details/101751995
+
+根本原因是next主题也是一个repo。
+
+1. 剪切 themes/next/.git文件夹到其它处
+
+2. 从暂存区删除该文件夹
+
+   ``` git rm --cache themes/next```
+
+3. 使用git status查看状态
+
+4. git三部曲
+
+5. 再移回themes/next/.git文件夹
+
+## 2. 换机之后的步骤
 
 1. clone到本地
 ```
