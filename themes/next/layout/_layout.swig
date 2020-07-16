@@ -10,7 +10,11 @@
   {% include '_partials/head.swig' %}
   <title>{% block title %}{% endblock %}</title>
   {% include '_third-party/analytics/index.swig' %}
+  <!-- live2d依赖 -->
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
 </head>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="{{ page.lang || page.language || config.language }}">
   <!-- mp3 player -->
@@ -52,7 +56,10 @@
         {% include '_third-party/analytics/analytics-with-widget.swig' %}
         {% block footer %}{% endblock %}
       </div>
+          <!-- live2d依赖 -->
+    <script src="https://soyawww.github.io/live2d/autoload.js"></script>
     </footer>
+
 
     {% if not theme.sidebar.b2t %}
       <div class="back-to-top">
