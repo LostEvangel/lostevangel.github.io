@@ -94,7 +94,7 @@ search:
 
 douban:
   user: 188558286 # 个人豆瓣ID
-  builtin: false
+  builtin: true
   book:
     title: '我的书单'
   movie:

@@ -13,6 +13,8 @@ description: Hexo真是太棒了
 
 ## 1. 常用命令
 
+官方文档：https://hexo.io/zh-cn/docs/server.html
+
 ```
 hexo new "HelloWorld" #新建文章
 hexo new page "pageName" #新建页面
