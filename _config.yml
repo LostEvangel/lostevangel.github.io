@@ -93,7 +93,7 @@ search:
 
 
 douban:
-  user: 188558286 # 个人豆瓣ID
+  user: 188558286 # 个人豆瓣ID    188558286
   builtin: true
   book:
     title: '我的书单'
@@ -101,4 +101,4 @@ douban:
     title: '我的电影'
   game:
     title: '我的游戏'
-  timeout: 10000
+  timeout: 500000
