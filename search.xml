@@ -1127,7 +1127,7 @@
   <entry>
     <title>Hexo 踩坑实录</title>
     <url>/2025/02/23/hexo%20%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/</url>
-    <content><![CDATA[<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="0-背景"><a href="#0-背景" class="headerlink" title="0. 背景"></a>0. 背景</h2><p>版本信息</p>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="0-背景"><a href="#0-背景" class="headerlink" title="0. 背景"></a>0. 背景</h2><p>版本信息</p>
 <blockquote>
 <p>hexo: 7.3.0<br>hexo-cli: 4.3.2<br>os: darwin 23.5.0 14.5<br>node: 23.7.0<br>acorn: 8.14.0<br>ada: 2.9.2<br>amaro: 0.3.0<br>ares: 1.34.4<br>brotli: 1.1.0<br>cjs_module_lexer: 1.4.1<br>cldr: 46.0<br>icu: 76.1<br>llhttp: 9.2.1<br>modules: 131<br>napi: 10<br>nbytes: 0.1.1<br>ncrypto: 0.0.1<br>nghttp2: 1.64.0<br>openssl: 3.4.1<br>simdjson: 3.10.1<br>simdutf: 6.0.3<br>sqlite: 3.47.2<br>tz: 2024b<br>undici: 6.21.1<br>unicode: 16.0<br>uv: 1.50.0<br>uvwasi: 0.0.21<br>v8: 12.9.202.28-node.12<br>zlib: 1.2.12</p>
 </blockquote>
@@ -1145,7 +1145,8 @@
 <figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.sidebar-inner</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: $grey-dark;</span><br><span class="line">  <span class="attribute">padding</span>: $sidebar-padding <span class="number">10px</span>;</span><br><span class="line">  <span class="attribute">text-align</span>: center;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">  <span class="attribute">top</span>: <span class="number">20%</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>不太行，文章里的侧边栏也被改了…</p>
-]]></content>
+<h2 id="3-一些莫名其妙的报错"><a href="#3-一些莫名其妙的报错" class="headerlink" title="3. 一些莫名其妙的报错"></a>3. 一些莫名其妙的报错</h2><p>比如 hexo deploy 时<br>很大概率是版本问题，删掉重新下载</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm un XX </span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>Hexo</category>
       </categories>
