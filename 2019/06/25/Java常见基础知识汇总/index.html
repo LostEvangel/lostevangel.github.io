@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lostevangel.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"manual"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Java面试和笔试中遇到的一些基础知识，总是忘，记录一下用以复习。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java常见基础知识汇总">
+<meta property="og:url" content="https://lostevangel.github.io/2019/06/25/Java%E5%B8%B8%E8%A7%81%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/index.html">
+<meta property="og:site_name" content="猫某人的选择">
+<meta property="og:description" content="Java面试和笔试中遇到的一些基础知识，总是忘，记录一下用以复习。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/LostEvangel/LostEvangel.github.io/blob/master/image/cover/1.jpg?raw=true">
+<meta property="article:published_time" content="2019-06-25T12:07:29.000Z">
+<meta property="article:modified_time" content="2025-02-22T18:52:19.818Z">
+<meta property="article:author" content="猫某人">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/LostEvangel/LostEvangel.github.io/blob/master/image/cover/1.jpg?raw=true">
+
+<link rel="canonical" href="https://lostevangel.github.io/2019/06/25/Java%E5%B8%B8%E8%A7%81%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Java常见基础知识汇总 | 猫某人的选择</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <script type="text/javascript" src="/js/my_js/love.js"></script>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">猫某人的选择</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于·</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-books">
+
+    <a href="/books/" rel="section"><i class="fa fa-fw fa-book"></i>读书</a>
+
+  </li>
+        <li class="menu-item menu-item-movies">
+
+    <a href="/movies/" rel="section"><i class="fa fa-fw fa-video-camera"></i>电影</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/LostEvangel" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lostevangel.github.io/2019/06/25/Java%E5%B8%B8%E8%A7%81%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar/avatar.png">
+      <meta itemprop="name" content="猫某人">
+      <meta itemprop="description" content="拒绝绑架，相对自由">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="猫某人的选择">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java常见基础知识汇总
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-06-25 20:07:29" itemprop="dateCreated datePublished" datetime="2019-06-25T20:07:29+08:00">2019-06-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-02-23 02:52:19" itemprop="dateModified" datetime="2025-02-23T02:52:19+08:00">2025-02-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+            <div class="post-description">Java面试和笔试中遇到的一些基础知识，总是忘，记录一下用以复习。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <div class="post-gallery" itemscope itemtype="http://schema.org/ImageGallery">
+            <img src="https://github.com/LostEvangel/LostEvangel.github.io/blob/master/image/cover/1.jpg?raw=true" itemprop="contentUrl">
+        </div>
+        <h1 id="Java常见基础知识汇总"><a href="#Java常见基础知识汇总" class="headerlink" title="Java常见基础知识汇总"></a>Java常见基础知识汇总</h1><h2 id="1-sleep-与wait-区别"><a href="#1-sleep-与wait-区别" class="headerlink" title="1. sleep()与wait()区别"></a>1. sleep()与wait()区别</h2><ol>
+<li><strong>锁</strong>：sleep()方法正在执行的线程主动让出CPU（然后CPU就可以去执行其他任务），在sleep指定时间后CPU再回到该线程继续往下执行(<font color='red'>注意：sleep方法只让出了CPU，而并不会释放同步资源锁！！！</font>)；wait()方法则是指当前线程让自己暂时退让出同步资源锁，以便其他正在等待该资源的线程得到该资源进而运行，只有调用了notify()方法，之前调用wait()的线程才会解除wait状态，可以去参与竞争同步资源锁，进而得到执行。</li>
+<li><strong>使用的位置</strong>：sleep()方法可以在任何地方使用；wait()方法则只能在同步方法或同步块中使用；</li>
+<li><strong>属于的类</strong>：sleep()是线程类（Thread）的方法，调用会暂停此线程指定的时间，但监控依然保持，不会释放对象锁，到时间自动恢复；wait()是Object的方法，调用会放弃对象锁，进入等待队列，待调用**notify()&#x2F;notifyAll()**唤醒指定的线程或者所有线程，才会进入锁池，不再次获得对象锁才会进入运行状态；</li>
+</ol>
+<h2 id="2-HashSet和TreeSet的区别"><a href="#2-HashSet和TreeSet的区别" class="headerlink" title="2. HashSet和TreeSet的区别"></a>2. HashSet和TreeSet的区别</h2><ol>
+<li><strong>实现方式</strong>：HashSet是采用hash表来实现的；TreeSet是采用树结构实现(红黑树算法)。</li>
+<li><strong>排列顺序</strong>：HashSet无序；TreeSet支持两种排序方式，自然排序和定制排序（实现comparable接口）。</li>
+<li><strong>复杂度</strong>：HashSet方法都是复杂度为O(1)；TreeSet方法都是复杂度为O(log (n))的方法。</li>
+<li><strong>判断方法</strong>：HashSet判断通过equals方法比较相等，并且两个对象的hashCode()方法返回值相等（需要重写hashCode（）和equals()方法）；TreeSet通过equals方法返回，或者通过CompareTo方法比较；</li>
+<li><strong>实现接口</strong>：HashSet实现Set接口；TreeSet实现SortedSet接口，SortedSet实现Set接口。</li>
+</ol>
+<p>备注：<strong>LinkedHashSet</strong>介于HashSet和TreeSet之间。它也是一个hash表，但是同时维护了一个双链表来记录插入的顺序。基本方法的复杂度为O(1)。</p>
+<h2 id="3-int和Integer的区别"><a href="#3-int和Integer的区别" class="headerlink" title="3. int和Integer的区别"></a>3. int和Integer的区别</h2><h3 id="1-区别概述"><a href="#1-区别概述" class="headerlink" title="1. 区别概述"></a>1. 区别概述</h3><ol>
+<li><strong>数据类型</strong>：Integer是int的包装类，int则是java的一种基本数据类型；</li>
+<li><strong>使用方法</strong>：Integer变量必须实例化后才能使用，而int变量不需要；</li>
+<li><strong>默认值</strong>：Integer 是类，默认值为null，int是基本数据类型，默认值为0；</li>
+<li><strong>实质</strong>：Integer实际是对象的引用，当new一个Integer时，实际上是生成一个指针指向此对象；而int则是直接存储数据值。</li>
+</ol>
+<h3 id="2-自动装箱和自动拆箱、缓存"><a href="#2-自动装箱和自动拆箱、缓存" class="headerlink" title="2. 自动装箱和自动拆箱、缓存"></a>2. 自动装箱和自动拆箱、缓存</h3><p>自动拆箱和自动装箱是 JDK1.5 以后才有的功能，也就是java当中众多的语法糖之一，它的执行是在编译期，会根据代码的语法，在生成class文件的时候，决定是否进行拆箱和装箱动作。</p>
+<h4 id="1-自动装箱"><a href="#1-自动装箱" class="headerlink" title="1. 自动装箱"></a>1. 自动装箱</h4><p>对于</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">128</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>生成class文件时，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> <span class="variable">a</span> <span class="operator">=</span> Integer.valueOf(<span class="number">128</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-自动拆箱"><a href="#2-自动拆箱" class="headerlink" title="2. 自动拆箱"></a>2. 自动拆箱</h4><p>将 Integer 类表示的数据赋值给基本数据类型int，就执行了自动拆箱。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> <span class="variable">a</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Integer</span>(<span class="number">128</span>);</span><br><span class="line"><span class="type">int</span> <span class="variable">m</span> <span class="operator">=</span> a;</span><br></pre></td></tr></table></figure>
+
+<p>class文件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> <span class="variable">a</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Integer</span>(<span class="number">128</span>);</span><br><span class="line"><span class="type">int</span> <span class="variable">m</span> <span class="operator">=</span> a.intValue();</span><br></pre></td></tr></table></figure>
+
+<p>简单来讲：自动装箱就是<code>Integer.valueOf(int i)</code>；自动拆箱就是 <code>i.intValue()</code>；</p>
+<h4 id="3-缓存"><a href="#3-缓存" class="headerlink" title="3. 缓存"></a>3. 缓存</h4><p> 当<code>Integer b1 = 12</code>时，是在常量池中开辟出同一个空间来存储12，在常量池中就必须对其的大小范围做出一个规定，规定其范围为：（-128~127）之间。如果超出了范围，会从堆区new一个Integer对象来存放值。</p>
+<h3 id="3-的比较"><a href="#3-的比较" class="headerlink" title="3. ==的比较"></a>3. <code>==</code>的比较</h3><h4 id="1-Integer与Integer"><a href="#1-Integer与Integer" class="headerlink" title="1. Integer与Integer"></a>1. Integer与Integer</h4><p>由于Integer变量实际上是对一个Integer对象的引用，是对象的地址，所以两个通过new生成的Integer变量永远是不相等的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> <span class="variable">i</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Integer</span>(<span class="number">100</span>);</span><br><span class="line"><span class="type">Integer</span> <span class="variable">j</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Integer</span>(<span class="number">100</span>);</span><br><span class="line">System.out.print(i == j); <span class="comment">//false</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-Integer与int"><a href="#2-Integer与int" class="headerlink" title="2. Integer与int"></a>2. Integer与int</h4><p>Integer与int比较时，会触发自动拆箱，实际为两个int的比较，因此，结果为true。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> <span class="variable">i</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Integer</span>(<span class="number">100</span>);</span><br><span class="line"><span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">100</span>;</span><br><span class="line">System.out.print(i == j); <span class="comment">//true</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-非new生成的Integer变量和new-Integer-生成的变量"><a href="#3-非new生成的Integer变量和new-Integer-生成的变量" class="headerlink" title="3. 非new生成的Integer变量和new Integer()生成的变量"></a>3. 非new生成的Integer变量和new Integer()生成的变量</h4><p>因为非new生成的Integer变量指向的是java常量池中的对象，而new Integer()生成的变量指向堆中新建的对象，两者在内存中的地址不同，结果为false。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> <span class="variable">i</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Integer</span>(<span class="number">100</span>);</span><br><span class="line"><span class="type">Integer</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">100</span>;</span><br><span class="line">System.out.print(i == j); <span class="comment">//false</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="4-对于两个非new生成的Integer对象"><a href="#4-对于两个非new生成的Integer对象" class="headerlink" title="4. 对于两个非new生成的Integer对象"></a>4. 对于两个非new生成的Integer对象</h4><p>如果在缓存范围之内，是指向同一个常量池中的地址，所以是true；如果在缓存范围之外，会new一个对象，内存地址不同，所以为false。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">100</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">100</span>;</span><br><span class="line">System.out.print(i == j); <span class="comment">//true</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">128</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">128</span>;</span><br><span class="line">System.out.print(i == j); <span class="comment">//false</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="5-算术运算"><a href="#5-算术运算" class="headerlink" title="5. 算术运算"></a>5. 算术运算</h4><p>由于 a+b包含了算术运算，因此会触发自动拆箱过程（会调用intValue方法）,&#x3D;&#x3D;比较符又将左边的自动拆箱，因此它们比较的是数值是否相等。</p>
+<p>equals()会先触发自动装箱，<strong>equals 运算符不会进行类型转换</strong>，Long.equals(Integer)，结果将是false。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">b</span> <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">c</span> <span class="operator">=</span> <span class="number">3</span>;</span><br><span class="line">System.out.println(c == (a + b)); <span class="comment">//true</span></span><br><span class="line">System.out.println(c.equals((a+b))); <span class="comment">//true</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="4-常量池中的String"><a href="#4-常量池中的String" class="headerlink" title="4. 常量池中的String"></a>4. 常量池中的String</h2><p>Java中的常量池，实际上分为两种形态：<strong>静态常量池</strong>和<strong>运行时常量池</strong>。</p>
+<h3 id="1-静态常量池"><a href="#1-静态常量池" class="headerlink" title="1. 静态常量池"></a>1. 静态常量池</h3><p>即*.class文件中的常量池，class文件中的常量池不仅仅包含字符串(数字)字面量，还包含类、方法的信息，占用class文件绝大部分空间。这种常量池主要用于存放两大类常量：<strong>字面量</strong>(Literal)和<strong>符号引用量</strong>(Symbolic References)，字面量相当于Java语言层面常量的概念，如文本字符串，声明为final的常量值等，符号引用则属于编译原理方面的概念，包括了如下三种类型的常量：</p>
+<ul>
+<li>类和接口的全限定名</li>
+<li>字段名称和描述符</li>
+<li>方法名称和描述符</li>
+</ul>
+<h3 id="2-运行时常量池"><a href="#2-运行时常量池" class="headerlink" title="2.  运行时常量池"></a>2.  运行时常量池</h3><p>是jvm虚拟机在完成类装载操作后，将class文件中的常量池载入到内存中，并保存在<strong>方法区</strong>中，我们常说的常量池，就是指方法区中的运行时常量池。</p>
+<h3 id="3-String类的intern"><a href="#3-String类的intern" class="headerlink" title="3. String类的intern()"></a>3. String类的intern()</h3><p>String的intern()方法会查找在常量池中是否存在一份equal相等的字符串,如果有则返回该字符串的引用,如果没有则添加自己的字符串进入常量池。</p>
+<h3 id="4-实例比较"><a href="#4-实例比较" class="headerlink" title="4. 实例比较"></a>4. 实例比较</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s2</span> <span class="operator">=</span> <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s3</span> <span class="operator">=</span> <span class="string">&quot;Hel&quot;</span> + <span class="string">&quot;lo&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s4</span> <span class="operator">=</span> <span class="string">&quot;Hel&quot;</span> + <span class="keyword">new</span> <span class="title class_">String</span>(<span class="string">&quot;lo&quot;</span>);</span><br><span class="line"><span class="type">String</span> <span class="variable">s5</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">String</span>(<span class="string">&quot;Hello&quot;</span>);</span><br><span class="line"><span class="type">String</span> <span class="variable">s6</span> <span class="operator">=</span> s5.intern();</span><br><span class="line"><span class="type">String</span> <span class="variable">s7</span> <span class="operator">=</span> <span class="string">&quot;H&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s8</span> <span class="operator">=</span> <span class="string">&quot;ello&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s9</span> <span class="operator">=</span> s7 + s8;</span><br><span class="line">          </span><br><span class="line">System.out.println(s1 == s2);  <span class="comment">// true</span></span><br><span class="line">System.out.println(s1 == s3);  <span class="comment">// true</span></span><br><span class="line">System.out.println(s1 == s4);  <span class="comment">// false</span></span><br><span class="line">System.out.println(s1 == s9);  <span class="comment">// false</span></span><br><span class="line">System.out.println(s4 == s5);  <span class="comment">// false</span></span><br><span class="line">System.out.println(s1 == s6);  <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p> 首先说明一点，在java 中，直接使用&#x3D;&#x3D;操作符，比较的是两个字符串的引用地址，并不是比较内容，比较内容请用String.equals()。</p>
+<p> s1 &#x3D;&#x3D; s2这个非常好理解，s1、s2在赋值时，均使用的字符串字面量，说白话点，就是直接把字符串写死，在编译期间，这种字面量会直接放入class文件的常量池中，从而实现复用，载入运行时常量池后，s1、s2指向的是同一个内存地址，所以相等。</p>
+<p>s1 &#x3D;&#x3D; s3这个地方有个坑，s3虽然是动态拼接出来的字符串，但是所有参与拼接的部分都是已知的字面量，在编译期间，这种拼接会被优化，编译器直接帮你拼好，因此String s3 &#x3D; “Hel” + “lo”;在class文件中被优化成String s3 &#x3D; “Hello”，所以s1 &#x3D;&#x3D; s3成立。只有使用引号包含文本的方式创建的String对象之间使用“+”连接产生的新对象才会被加入字符串池中。</p>
+<p>s1 &#x3D;&#x3D; s4当然不相等，s4虽然也是拼接出来的，但new String(“lo”)这部分不是已知字面量，是一个不可预料的部分，编译器不会优化，必须等到运行时才可以确定结果，结合<strong>字符串不变</strong>定理，鬼知道s4被分配到哪去了，所以地址肯定不同。对于所有包含new方式新建对象（包括null）的“+”连接表达式，它所产生的新对象都不会被加入字符串池中。</p>
+<p>s1 &#x3D;&#x3D; s9也不相等，道理差不多，虽然s7、s8在赋值的时候使用的字符串字面量，但是拼接成s9的时候，s7、s8作为两个变量，都是不可预料的，编译器毕竟是编译器，不可能当解释器用，不能在编译期被确定，所以不做优化，只能等到运行时，在堆中创建s7、s8拼接成的新字符串，在堆中地址不确定，不可能与方法区常量池中的s1地址相同。</p>
+<p><img src="/image/java/%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%B8%AD%E7%9A%84String.png" alt="常量池中的String"></p>
+<p>s4 &#x3D;&#x3D; s5已经不用解释了，绝对不相等，二者都在堆中，但地址不同。</p>
+<p>s1 &#x3D;&#x3D; s6这两个相等完全归功于intern方法，s5在堆中，内容为Hello ，intern方法会尝试将Hello字符串添加到常量池中，并返回其在常量池中的地址，因为常量池中已经有了Hello字符串，所以intern方法直接返回地址；而s1在编译期就已经指向常量池了，因此s1和s6指向同一地址，相等。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">A</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>; <span class="comment">// 常量A</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">B</span> <span class="operator">=</span> <span class="string">&quot;cd&quot;</span>; <span class="comment">// 常量B</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">     <span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> A + B;  <span class="comment">// 将两个常量用+连接对s进行初始化 </span></span><br><span class="line">     <span class="type">String</span> <span class="variable">t</span> <span class="operator">=</span> <span class="string">&quot;abcd&quot;</span>;   </span><br><span class="line">    <span class="keyword">if</span> (s == t) &#123;   </span><br><span class="line">         System.out.println(<span class="string">&quot;s等于t，它们是同一个对象&quot;</span>);   </span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;   </span><br><span class="line">         System.out.println(<span class="string">&quot;s不等于t，它们不是同一个对象&quot;</span>);   </span><br><span class="line">     &#125;   </span><br><span class="line"> &#125; </span><br><span class="line"><span class="comment">// s等于t，它们是同一个对象</span></span><br><span class="line"><span class="comment">// A和B都是常量，值是固定的，因此s的值也是固定的，它在类被编译时就已经确定了。也就是说：String s=A+B; 等同于：String s=&quot;ab&quot;+&quot;cd&quot;;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String A; <span class="comment">// 常量A</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String B;    <span class="comment">// 常量B</span></span><br><span class="line"><span class="keyword">static</span> &#123;   </span><br><span class="line">     A = <span class="string">&quot;ab&quot;</span>;   </span><br><span class="line">     B = <span class="string">&quot;cd&quot;</span>;   </span><br><span class="line"> &#125;   </span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;   </span><br><span class="line">    <span class="comment">// 将两个常量用+连接对s进行初始化   </span></span><br><span class="line">     <span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> A + B;   </span><br><span class="line">     <span class="type">String</span> <span class="variable">t</span> <span class="operator">=</span> <span class="string">&quot;abcd&quot;</span>;   </span><br><span class="line">    <span class="keyword">if</span> (s == t) &#123;   </span><br><span class="line">         System.out.println(<span class="string">&quot;s等于t，它们是同一个对象&quot;</span>);   </span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;   </span><br><span class="line">         System.out.println(<span class="string">&quot;s不等于t，它们不是同一个对象&quot;</span>);   </span><br><span class="line">     &#125;   </span><br><span class="line"> &#125; </span><br><span class="line"><span class="comment">// s不等于t，它们不是同一个对象</span></span><br><span class="line"><span class="comment">// A和B虽然被定义为常量，但是它们都没有马上被赋值。在运算出s的值之前，他们何时被赋值，以及被赋予什么样的值，都是个变数。因此A和B在被赋值之前，性质类似于一个变量。那么s就不能在编译期被确定，而只能在运行时被创建了。</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. 总结</h3><ul>
+<li><p>必须要关注编译期的行为，才能更好的理解常量池。</p>
+</li>
+<li><p>运行时常量池中的常量，基本来源于各个class文件中的常量池。</p>
+</li>
+<li><p>程序运行时，除非手动向常量池中添加常量(比如调用intern方法)，否则jvm不会自动添加常量到常量池。</p>
+</li>
+</ul>
+<h3 id="6-String、StringBuffer-、StringBuilder"><a href="#6-String、StringBuffer-、StringBuilder" class="headerlink" title="6. String、StringBuffer 、StringBuilder"></a>6. String、StringBuffer 、StringBuilder</h3><ul>
+<li><strong>可变性</strong>：String 不可变；StringBuffer 和 StringBuilder 可变</li>
+<li><strong>线程安全</strong>：String 不可变，因此是线程安全的；StringBuilder 不是线程安全的；StringBuffer 是线程安全的，内部使用 synchronized 进行同步。</li>
+</ul>
+<h2 id="5-static加载顺序、执行时机"><a href="#5-static加载顺序、执行时机" class="headerlink" title="5.static加载顺序、执行时机"></a>5.static加载顺序、执行时机</h2><h3 id="1-static代码块执行时机"><a href="#1-static代码块执行时机" class="headerlink" title="1. static代码块执行时机"></a>1. static代码块执行时机</h3><p>一个类的运行分为以下步骤：</p>
+<ol>
+<li><strong>装载</strong></li>
+<li><strong>连接</strong></li>
+<li><strong>初始化</strong></li>
+</ol>
+<p>装载阶段又三个基本动作组成：</p>
+<ol>
+<li>通过类型的完全限定名，产生一个代表该类型的二进制数据流</li>
+<li>解析这个二进制数据流为方法区内的内部数据结</li>
+<li>构创建一个表示该类型的java.lang.Class类的实例</li>
+</ol>
+<p>连接阶段又分为三部分：</p>
+<ol>
+<li>验证，确认类型符合Java语言的语义，检查各个类之间的二进制兼容性(比如final的类不用拥有子类等)，另外还需要进行符号引用的验证。</li>
+<li>准备，Java虚拟机为类变量分配内存，设置默认初始值。</li>
+<li>解析(可选的) ，在类型的常量池中寻找类，接口，字段和方法的符号引用，把这些符号引用替换成直接引用的过程。</li>
+</ol>
+<p>当一个类被主动使用时，Java虚拟就会对其初始化，如下六种情况为主动使用：</p>
+<ol>
+<li>当创建某个类的新实例时（如通过new或者反射，克隆，反序列化等）</li>
+<li>当调用某个类的静态方法时</li>
+<li>当使用某个类或接口的静态字段时</li>
+<li>当调用Java API中的某些反射方法时，比如类Class中的方法，或者java.lang.reflect中的类的方法时</li>
+<li>当初始化某个子类时</li>
+<li>当虚拟机启动某个被标明为启动类的类（即包含main方法的那个类）</li>
+</ol>
+<p>Java编译器会收集所有的类变量初始化语句和类型的静态初始化器，将这些放到一个特殊的方法中：clinit。 </p>
+<h3 id="2-带有static的代码执行顺序"><a href="#2-带有static的代码执行顺序" class="headerlink" title="2. 带有static的代码执行顺序"></a>2. 带有static的代码执行顺序</h3><h4 id="1-如果类还没有被加载"><a href="#1-如果类还没有被加载" class="headerlink" title="1. 如果类还没有被加载"></a>1. 如果类还没有被加载</h4><ol>
+<li>先执行父类的静态代码块和静态变量初始化，并且静态代码块和静态变量的执行顺序只跟代码中出现的顺序有关。 </li>
+<li>执行子类的静态代码块和静态变量初始化。 </li>
+<li>执行父类的实例变量初始化 </li>
+<li>执行父类的构造函数 </li>
+<li>执行子类的实例变量初始化 </li>
+<li>执行子类的构造函数</li>
+</ol>
+<h4 id="2-如果类已经被加载"><a href="#2-如果类已经被加载" class="headerlink" title="2. 如果类已经被加载"></a>2. 如果类已经被加载</h4><p>则静态代码块和静态变量就不用重复执行，再创建类对象时，只执行与实例相关的变量初始化和构造方法。</p>
+<h4 id="3-实例"><a href="#3-实例" class="headerlink" title="3. 实例"></a>3. 实例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> <span class="keyword">extends</span> <span class="title class_">Base</span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">static</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;test static&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Test</span><span class="params">()</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;test constructor&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Test</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Base</span>&#123;</span><br><span class="line">     </span><br><span class="line">    <span class="keyword">static</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;base static&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Base</span><span class="params">()</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;base constructor&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// base static</span></span><br><span class="line"><span class="comment">// test static</span></span><br><span class="line"><span class="comment">// base constructor</span></span><br><span class="line"><span class="comment">// test constructor</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Person</span>&#123;</span><br><span class="line">    <span class="keyword">static</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;person static&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Person</span><span class="params">(String str)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;person &quot;</span>+str);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyClass</span> <span class="keyword">extends</span> <span class="title class_">main</span> &#123;</span><br><span class="line">    <span class="type">Person</span> <span class="variable">person</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>(<span class="string">&quot;MyClass&quot;</span>);</span><br><span class="line">    <span class="keyword">static</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;myclass static&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyClass</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;myclass constructor&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">main</span>  &#123;</span><br><span class="line">    <span class="type">Person</span> <span class="variable">person</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>(<span class="string">&quot;main&quot;</span>);</span><br><span class="line">    <span class="keyword">static</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;main static&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;main constructor&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">MyClass</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// main static</span></span><br><span class="line"><span class="comment">// myclass static</span></span><br><span class="line"><span class="comment">// person static</span></span><br><span class="line"><span class="comment">// person main</span></span><br><span class="line"><span class="comment">// main constructor</span></span><br><span class="line"><span class="comment">// person MyClass</span></span><br><span class="line"><span class="comment">// myclass constructor</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<h2 id="6-基本数据类型和引用类型在JVM中存储在哪"><a href="#6-基本数据类型和引用类型在JVM中存储在哪" class="headerlink" title="6. 基本数据类型和引用类型在JVM中存储在哪"></a>6. 基本数据类型和引用类型在JVM中存储在哪</h2><h3 id="1-在方法中声明的变量"><a href="#1-在方法中声明的变量" class="headerlink" title="1. 在方法中声明的变量"></a>1. 在方法中声明的变量</h3><p>即该变量是局部变量，每当程序调用方法时，系统都会为该方法建立一个方法栈，其所在方法中声明的变量就放在方法栈中，当方法结束系统会释放方法栈，其对应在该方法中声明的变量随着栈的销毁而结束，这就局部变量只能在方法中有效的原因。</p>
+<p>在方法中声明的变量可以是基本类型的变量，也可以是引用类型的变量。</p>
+<ul>
+<li>当声明是基本类型的变量的时，其变量名及值（变量名及值是两个概念）是放在JAVA虚拟机栈中；</li>
+<li>当声明的是引用变量时，所声明的变量（该变量实际上是在方法中存储的是内存地址值）是放在JAVA虚拟机的栈中，该变量所指向的对象是放在堆类存中的。</li>
+</ul>
+<h3 id="2-在类中声明的变量"><a href="#2-在类中声明的变量" class="headerlink" title="2. 在类中声明的变量"></a>2. 在类中声明的变量</h3><p>成员变量，也叫全局变量，放在堆中的（因为全局变量不会随着某个方法执行结束而销毁）。</p>
+<p>同样在类中声明的变量即可是基本类型的变量，也可是引用类型的变量。</p>
+<ul>
+<li>当声明的是基本类型的变量其变量名及其值放在堆内存中的；</li>
+<li>引用类型时，其声明的变量仍然会存储一个内存地址值，该内存地址值指向所引用的对象。引用变量名和对应的对象仍然存储在相应的堆中。</li>
+</ul>
+<h2 id="7-Java-与-C-的区别"><a href="#7-Java-与-C-的区别" class="headerlink" title="7. Java 与 C++ 的区别"></a>7. Java 与 C++ 的区别</h2><ul>
+<li>Java 是纯粹的面向对象语言，所有的对象都继承自 java.lang.Object，C++ 为了兼容 C 即支持面向对象也支持面向过程。</li>
+<li>Java 通过虚拟机从而实现跨平台特性，但是 C++ 依赖于特定的平台。</li>
+<li>Java 没有指针，它的引用可以理解为安全指针，而 C++ 具有和 C 一样的指针。</li>
+<li>Java 支持自动垃圾回收，而 C++ 需要手动回收。</li>
+<li>Java 不支持多重继承，只能通过实现多个接口来达到相同目的，而 C++ 支持多重继承。</li>
+<li>Java 不支持操作符重载，虽然可以对两个 String 对象执行加法运算，但是这是语言内置支持的操作，不属于操作符重载，而 C++ 可以。</li>
+<li>Java 的 goto 是保留字，但是不可用，C++ 可以使用 goto。</li>
+<li>Java 不支持条件编译，C++ 通过 #ifdef #ifndef 等预处理命令从而实现条件编译。</li>
+</ul>
+<h2 id="8-线程池"><a href="#8-线程池" class="headerlink" title="8. 线程池"></a>8. 线程池</h2><p><a target="_blank" rel="noopener" href="https://www.nowcoder.com/discuss/152050?type=0&order=0&pos=6&page=0">https://www.nowcoder.com/discuss/152050?type=0&amp;order=0&amp;pos=6&amp;page=0</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/06/25/centos7%E5%AE%89%E8%A3%85nginx/" rel="prev" title="CentOS7安装Nginx">
+      <i class="fa fa-chevron-left"></i> CentOS7安装Nginx
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/06/27/CopyOnWriteArrayList%E5%92%8CCopyOnWriteArraySet/" rel="next" title="CopyOnWriteArrayList和CopyOnWriteArraySet的源码解析">
+      CopyOnWriteArrayList和CopyOnWriteArraySet的源码解析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Java%E5%B8%B8%E8%A7%81%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB"><span class="nav-text">Java常见基础知识汇总</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-sleep-%E4%B8%8Ewait-%E5%8C%BA%E5%88%AB"><span class="nav-text">1. sleep()与wait()区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-HashSet%E5%92%8CTreeSet%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. HashSet和TreeSet的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-int%E5%92%8CInteger%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">3. int和Integer的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%8C%BA%E5%88%AB%E6%A6%82%E8%BF%B0"><span class="nav-text">1. 区别概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%87%AA%E5%8A%A8%E8%A3%85%E7%AE%B1%E5%92%8C%E8%87%AA%E5%8A%A8%E6%8B%86%E7%AE%B1%E3%80%81%E7%BC%93%E5%AD%98"><span class="nav-text">2. 自动装箱和自动拆箱、缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E8%87%AA%E5%8A%A8%E8%A3%85%E7%AE%B1"><span class="nav-text">1. 自动装箱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E8%87%AA%E5%8A%A8%E6%8B%86%E7%AE%B1"><span class="nav-text">2. 自动拆箱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E7%BC%93%E5%AD%98"><span class="nav-text">3. 缓存</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-text">3. &#x3D;&#x3D;的比较</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Integer%E4%B8%8EInteger"><span class="nav-text">1. Integer与Integer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Integer%E4%B8%8Eint"><span class="nav-text">2. Integer与int</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E9%9D%9Enew%E7%94%9F%E6%88%90%E7%9A%84Integer%E5%8F%98%E9%87%8F%E5%92%8Cnew-Integer-%E7%94%9F%E6%88%90%E7%9A%84%E5%8F%98%E9%87%8F"><span class="nav-text">3. 非new生成的Integer变量和new Integer()生成的变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E5%AF%B9%E4%BA%8E%E4%B8%A4%E4%B8%AA%E9%9D%9Enew%E7%94%9F%E6%88%90%E7%9A%84Integer%E5%AF%B9%E8%B1%A1"><span class="nav-text">4. 对于两个非new生成的Integer对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E7%AE%97%E6%9C%AF%E8%BF%90%E7%AE%97"><span class="nav-text">5. 算术运算</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%B8%AD%E7%9A%84String"><span class="nav-text">4. 常量池中的String</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%9D%99%E6%80%81%E5%B8%B8%E9%87%8F%E6%B1%A0"><span class="nav-text">1. 静态常量池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0"><span class="nav-text">2.  运行时常量池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-String%E7%B1%BB%E7%9A%84intern"><span class="nav-text">3. String类的intern()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E4%BE%8B%E6%AF%94%E8%BE%83"><span class="nav-text">4. 实例比较</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%80%BB%E7%BB%93"><span class="nav-text">5. 总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-String%E3%80%81StringBuffer-%E3%80%81StringBuilder"><span class="nav-text">6. String、StringBuffer 、StringBuilder</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-static%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F%E3%80%81%E6%89%A7%E8%A1%8C%E6%97%B6%E6%9C%BA"><span class="nav-text">5.static加载顺序、执行时机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-static%E4%BB%A3%E7%A0%81%E5%9D%97%E6%89%A7%E8%A1%8C%E6%97%B6%E6%9C%BA"><span class="nav-text">1. static代码块执行时机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%B8%A6%E6%9C%89static%E7%9A%84%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="nav-text">2. 带有static的代码执行顺序</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%A6%82%E6%9E%9C%E7%B1%BB%E8%BF%98%E6%B2%A1%E6%9C%89%E8%A2%AB%E5%8A%A0%E8%BD%BD"><span class="nav-text">1. 如果类还没有被加载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%A6%82%E6%9E%9C%E7%B1%BB%E5%B7%B2%E7%BB%8F%E8%A2%AB%E5%8A%A0%E8%BD%BD"><span class="nav-text">2. 如果类已经被加载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%AE%9E%E4%BE%8B"><span class="nav-text">3. 实例</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B%E5%9C%A8JVM%E4%B8%AD%E5%AD%98%E5%82%A8%E5%9C%A8%E5%93%AA"><span class="nav-text">6. 基本数据类型和引用类型在JVM中存储在哪</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9C%A8%E6%96%B9%E6%B3%95%E4%B8%AD%E5%A3%B0%E6%98%8E%E7%9A%84%E5%8F%98%E9%87%8F"><span class="nav-text">1. 在方法中声明的变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%9C%A8%E7%B1%BB%E4%B8%AD%E5%A3%B0%E6%98%8E%E7%9A%84%E5%8F%98%E9%87%8F"><span class="nav-text">2. 在类中声明的变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-Java-%E4%B8%8E-C-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">7. Java 与 C++ 的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E7%BA%BF%E7%A8%8B%E6%B1%A0"><span class="nav-text">8. 线程池</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="猫某人"
+      src="/avatar/avatar.png">
+  <p class="site-author-name" itemprop="name">猫某人</p>
+  <div class="site-description" itemprop="description">拒绝绑架，相对自由</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lostevangel" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lostevangel" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:kai_keinz@163.com" title="E-Mail → mailto:kai_keinz@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">猫某人</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">154k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:20</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        document.title = '啊咧?真由氏的怀表停了呢~' + OriginTitile;
+        clearTimeout(titleTime);
+      } else {
+        document.title = '这一切都是命运石之门的选择！' + OriginTitile;
+        titleTime = setTimeout(function() {
+          document.title = OriginTitile;
+        }, 2000);
+      }
+    });
+  </script>
+
+</body>
+</html>
