@@ -1,0 +1,129 @@
+# ===========================================================
+# NexT 8.x Configuration
+# ===========================================================
+
+# Scheme
+scheme: Mist
+
+# Language
+language: zh-Hans
+
+# Favicon
+favicon:
+  small: /images/logo.jpg
+  medium: /images/logo.jpg
+  apple_touch_icon: /images/apple-touch-icon-next.png
+  safari_pinned_tab: /images/logo.svg
+
+# Keywords
+keywords: "cherry"
+
+# Menu
+menu:
+  home: / || fa fa-home
+  tags: /tags/ || fa fa-tags
+  categories: /categories/ || fa fa-th
+  archives: /archives/ || fa fa-archive
+  about: /about/ || fa fa-user
+  books: /books/ || fa fa-book
+  movies: /movies/ || fa fa-video-camera
+  games: /games/ || fa fa-gamepad
+
+# Sidebar
+sidebar:
+  position: left
+  display: post
+  offset: 12
+  onmobile: true
+
+# Avatar
+avatar:
+  url: /images/avatar.gif
+  rounded: false
+  rotated: false
+
+# Social
+social:
+  GitHub: https://github.com/CherryKeinz || fab fa-github
+  E-Mail: mailto:kai_keinz@163.com || fa fa-envelope
+
+social_icons:
+  enable: true
+  icons_only: false
+  transition: false
+
+# Footer
+footer:
+  icon:
+    name: fa fa-user
+    animated: false
+    color: "#ff0000"
+  copyright: Cherry
+  powered: true
+
+# Post meta
+post_meta:
+  item_text: true
+  created_at: true
+  updated_at:
+    enable: false
+  categories: true
+
+# Post wordcount
+symbols_count_time:
+  separated_meta: true
+  item_text_total: false
+
+# TOC
+toc:
+  enable: true
+  number: false
+  wrap: false
+
+# Local Search
+local_search:
+  enable: true
+  top_n_per_article: 1
+
+# Fancybox
+fancybox: true
+
+# Pace progress bar
+pace:
+  enable: true
+  color: blue
+  theme: minimal
+
+# Motion
+motion:
+  enable: true
+  async: false
+
+# Canvas ribbon
+canvas_ribbon:
+  enable: false
+
+# Tags plugins
+note:
+  style: simple
+  icons: false
+
+tabs:
+  enable: true
+
+label: true
+
+# Comments - Livere
+comments:
+  active: livere
+  storage: true
+  lazyload: false
+
+livere_uid: MTAyMC8zMTk1OC84NTIy
+
+# Exturl
+exturl: false
+
+# Custom file paths for custom scripts
+custom_file_path:
+  bodyEnd: source/_data/body-end.njk

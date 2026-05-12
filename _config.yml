@@ -93,7 +93,7 @@ search:
 
 
 douban:
-  user: 188558286 # 个人豆瓣ID    188558286
+  id: 188558286
   builtin: true
   book:
     title: '我的书单'

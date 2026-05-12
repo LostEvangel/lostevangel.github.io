@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sL \"https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js\" -o \"D:/work/MyCode/cherrykeinz.github.io/themes/next/source/lib/jquery/index.js\")",
+      "WebSearch"
+    ]
+  }
+}

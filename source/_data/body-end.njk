@@ -1,0 +1,25 @@
+<script>
+// Title trick - 页面标题切换效果
+var OriginTitile = document.title;
+var titleTime;
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    document.title = '啊咧?真由氏的怀表停了呢~' + OriginTitile;
+    clearTimeout(titleTime);
+  } else {
+    document.title = '这一切都是命运石之门的选择！' + OriginTitile;
+    titleTime = setTimeout(function() {
+      document.title = OriginTitile;
+    }, 2000);
+  }
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+
+<!-- live2d 看板娘 -->
+<script src="https://soyawww.github.io/live2d/autoload.js"></script>
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
