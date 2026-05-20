@@ -3110,4 +3110,114 @@
         <tag>Hexo</tag>
       </tags>
   </entry>
+  <entry>
+    <title>使用 Xray + SSR 多级代理链路访问 ChatGPT</title>
+    <url>/2026/05/21/xray-ssr-multihop-chatgpt/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>手上有两台服务器：一台香港服务器（低延迟直连），一台美国服务器（原生 IP）。需求很明确——访问 ChatGPT 时走美国 IP，其他流量从香港直出。</p>
+<p>本文记录使用 <strong>Xray</strong>（香港） + <strong>SSR</strong>（美国）搭建多级代理链的完整过程。</p>
+<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p>链路流向如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">本地 SSR 客户端</span><br><span class="line">  → HK :9999 (Xray SS inbound)</span><br><span class="line">    → Xray 路由规则匹配</span><br><span class="line">      ├── ChatGPT/OpenAI 域名 → :1081 (SSR local SOCKS5)</span><br><span class="line">      │                         → US :443 (SSR Server)</span><br><span class="line">      │                         → chatgpt.com ✅</span><br><span class="line">      └── 其他流量 → direct (HK 直连)</span><br></pre></td></tr></table></figure>
+
+<p>核心思路：香港服务器跑 Xray，作为本地客户端的统一入口；Xray 通过域名规则分流，只有 ChatGPT 相关的域名走 SOCKS5 代理转发到美国 SSR 出口，其余流量直接从香港出。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ul>
+<li>香港服务器：已安装 Xray 26.x</li>
+<li>美国服务器：已运行 SSR Server（端口 443）</li>
+<li>本地：SSR 客户端</li>
+</ul>
+<h2 id="Xray-配置"><a href="#Xray-配置" class="headerlink" title="Xray 配置"></a>Xray 配置</h2><p>Xray 的配置文件 <code>/usr/local/etc/xray/config.json</code>：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;log&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;loglevel&quot;</span><span class="punctuation">:</span> <span class="string">&quot;debug&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;inbounds&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;port&quot;</span><span class="punctuation">:</span> <span class="number">9999</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;protocol&quot;</span><span class="punctuation">:</span> <span class="string">&quot;shadowsocks&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;settings&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;method&quot;</span><span class="punctuation">:</span> <span class="string">&quot;chacha20-ietf-poly1305&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;xray4chatgpt&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;network&quot;</span><span class="punctuation">:</span> <span class="string">&quot;tcp,udp&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;outbounds&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;direct&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;protocol&quot;</span><span class="punctuation">:</span> <span class="string">&quot;freedom&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;us-proxy&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;protocol&quot;</span><span class="punctuation">:</span> <span class="string">&quot;socks&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;settings&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;servers&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;address&quot;</span><span class="punctuation">:</span> <span class="string">&quot;127.0.0.1&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;port&quot;</span><span class="punctuation">:</span> <span class="number">1081</span></span><br><span class="line">          <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;routing&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;rules&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;field&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;domain&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">          <span class="string">&quot;chatgpt.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="string">&quot;openai.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="string">&quot;api.openai.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="string">&quot;auth0.openai.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="string">&quot;platform.openai.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="string">&quot;chat.openai.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="string">&quot;oaistatic.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="string">&quot;oaiusercontent.com&quot;</span></span><br><span class="line">        <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;outboundTag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;us-proxy&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;field&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;network&quot;</span><span class="punctuation">:</span> <span class="string">&quot;tcp,udp&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;outboundTag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;direct&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="关键点说明"><a href="#关键点说明" class="headerlink" title="关键点说明"></a>关键点说明</h3><p><strong>inbounds</strong>：Xray 监听 <code>0.0.0.0:9999</code>，使用 Shadowsocks 协议。本地 SSR 客户端协议选 <code>origin</code>、混淆选 <code>plain</code>，即可退化为标准 Shadowsocks 协议对接。</p>
+<p><strong>outbounds</strong>：</p>
+<ul>
+<li><code>direct</code>：freedom 协议，直接出站</li>
+<li><code>us-proxy</code>：SOCKS5 代理指向 <code>127.0.0.1:1081</code>，这个端口由 HK 上的 SSR local 客户端监听（该客户端连接到美国 SSR 服务器）</li>
+</ul>
+<p><strong>routing</strong>：域名规则匹配 ChatGPT&#x2F;OpenAI 相关域名走 <code>us-proxy</code>；其余所有流量走 <code>direct</code>。</p>
+<h2 id="美国-SSR-客户端配置"><a href="#美国-SSR-客户端配置" class="headerlink" title="美国 SSR 客户端配置"></a>美国 SSR 客户端配置</h2><p>在香港服务器上，需要运行一个 SSR local 客户端，将 SOCKS5 代理指向美国服务器。</p>
+<p>配置文件示例（<code>us_local_config.json</code>）：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;server&quot;</span><span class="punctuation">:</span> <span class="string">&quot;192.3.59.197&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;server_port&quot;</span><span class="punctuation">:</span> <span class="number">443</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;local_address&quot;</span><span class="punctuation">:</span> <span class="string">&quot;127.0.0.1&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;local_port&quot;</span><span class="punctuation">:</span> <span class="number">1081</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;your_password&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;method&quot;</span><span class="punctuation">:</span> <span class="string">&quot;aes-256-cfb&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;protocol&quot;</span><span class="punctuation">:</span> <span class="string">&quot;auth_aes128_md5&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;obfs&quot;</span><span class="punctuation">:</span> <span class="string">&quot;tls1.2_ticket_auth&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;obfs_param&quot;</span><span class="punctuation">:</span> <span class="string">&quot;www.qq.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;timeout&quot;</span><span class="punctuation">:</span> <span class="number">120</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>启动命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python3 shadowsocks/local.py -c us_local_config.json</span><br></pre></td></tr></table></figure>
+
+<h2 id="Xray-加密方式注意事项"><a href="#Xray-加密方式注意事项" class="headerlink" title="Xray 加密方式注意事项"></a>Xray 加密方式注意事项</h2><p>Xray 26.x <strong>不再支持</strong>以下旧版 Shadowsocks 加密方式：</p>
+<ul>
+<li><code>aes-256-cfb</code> &#x2F; <code>aes-128-cfb</code></li>
+<li><code>aes-256-ctr</code></li>
+<li><code>rc4-md5</code></li>
+<li><code>chacha20</code> &#x2F; <code>chacha20-ietf</code>（非 AEAD 版本）</li>
+</ul>
+<p>仅支持 AEAD 加密：</p>
+<table>
+<thead>
+<tr>
+<th>加密方式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>aes-256-gcm</code></td>
+<td>推荐，性能好</td>
+</tr>
+<tr>
+<td><code>aes-128-gcm</code></td>
+<td>轻量级</td>
+</tr>
+<tr>
+<td><code>chacha20-ietf-poly1305</code></td>
+<td>兼容性较好</td>
+</tr>
+</tbody></table>
+<p>如果本地 SSR 客户端没有 <code>aes-256-gcm</code>，可以选择 <code>chacha20-ietf-poly1305</code>，大部分 SSR 客户端都支持。</p>
+<h2 id="本地客户端配置"><a href="#本地客户端配置" class="headerlink" title="本地客户端配置"></a>本地客户端配置</h2><p>本地 SSR 客户端连接香港服务器（Xray 的 SS inbound）：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>服务器</td>
+<td><code>38.47.100.211</code></td>
+</tr>
+<tr>
+<td>端口</td>
+<td><code>9999</code></td>
+</tr>
+<tr>
+<td>加密方式</td>
+<td><code>chacha20-ietf-poly1305</code></td>
+</tr>
+<tr>
+<td>密码</td>
+<td><code>xray4chatgpt</code></td>
+</tr>
+<tr>
+<td>协议</td>
+<td><code>origin</code></td>
+</tr>
+<tr>
+<td>混淆</td>
+<td><code>plain</code></td>
+</tr>
+</tbody></table>
+<p>协议必须选 <code>origin</code>、混淆选 <code>plain</code>，这样 SSR 客户端才能以标准 Shadowsocks 协议与 Xray 通信。</p>
+<h2 id="验证链路"><a href="#验证链路" class="headerlink" title="验证链路"></a>验证链路</h2><p>在香港服务器上测试：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 测试直连 ChatGPT（应返回 403 而非超时）</span></span><br><span class="line">curl -s -o /dev/null -w <span class="string">&quot;%&#123;http_code&#125;&quot;</span> https://chatgpt.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试通过 SOCKS5 代理请求 ChatGPT</span></span><br><span class="line">curl -s -o /dev/null -w <span class="string">&quot;%&#123;http_code&#125;&quot;</span> --socks5 127.0.0.1:1081 https://chatgpt.com</span><br></pre></td></tr></table></figure>
+
+<p>返回 <code>403</code> 是正常的（缺少浏览器请求头），只要不是连接超时或拒绝，说明链路通畅。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这套方案的精髓在于 <strong>“只分流需要代理的流量”</strong>——ChatGPT 走美国出口，其他流量保持香港直连，延迟和带宽影响最小化。Xray 的域名路由规则可以随时扩展，如需增加其他走美国出口的服务，只需在 <code>routing.rules[0].domain</code> 数组中追加域名即可。</p>
+]]></content>
+      <categories>
+        <category>科学上网</category>
+      </categories>
+      <tags>
+        <tag>Xray</tag>
+        <tag>SSR</tag>
+        <tag>代理链</tag>
+        <tag>ChatGPT</tag>
+      </tags>
+  </entry>
 </search>
