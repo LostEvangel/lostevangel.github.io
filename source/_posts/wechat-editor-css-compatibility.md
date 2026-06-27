@@ -3,9 +3,9 @@ title: 我们做了一个公众号排版 Skill
 date: 2026-06-27 22:00:00
 updated: 2026-06-27 22:00:00
 tags:
-  - Hexo
-  - Claude
-categories: Hexo
+  - 微信
+  - Skill
+categories: Skill
 toc: true
 description: 从零开始构建一个微信公众号排版 Skill 的过程记录——主题设计、工作流搭建，以及和微信编辑器的兼容性博弈。
 ---
