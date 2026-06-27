@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lostevangel.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12,"onmobile":true},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="背景有时候在网上下载视频，拿到的不是直接的 MP4 文件，而是一个 .dash+xml 或 .m3u8 格式的流媒体清单文件。这类文件描述了视频的分段信息、音视频轨道、加密方式等，播放器根据清单文件去拉取真正的视频片断。 常见的流媒体协议有两种：  DASH（Dynamic Adaptive Streaming over HTTP）：清单文件为 .mpd 或 .dash+xml，描述多个分辨率（1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DASH&#x2F;HLS 流媒体视频下载脚本">
+<meta property="og:url" content="https://lostevangel.github.io/2026/05/30/dash-hls-video-downloader/index.html">
+<meta property="og:site_name" content="石头门的选择">
+<meta property="og:description" content="背景有时候在网上下载视频，拿到的不是直接的 MP4 文件，而是一个 .dash+xml 或 .m3u8 格式的流媒体清单文件。这类文件描述了视频的分段信息、音视频轨道、加密方式等，播放器根据清单文件去拉取真正的视频片断。 常见的流媒体协议有两种：  DASH（Dynamic Adaptive Streaming over HTTP）：清单文件为 .mpd 或 .dash+xml，描述多个分辨率（1">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-30T12:30:00.000Z">
+<meta property="article:modified_time" content="2026-05-30T12:30:00.000Z">
+<meta property="article:author" content="Keinz">
+<meta property="article:tag" content="DASH">
+<meta property="article:tag" content="HLS">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="yt-dlp">
+<meta property="article:tag" content="视频下载">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://lostevangel.github.io/2026/05/30/dash-hls-video-downloader/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://lostevangel.github.io/2026/05/30/dash-hls-video-downloader/","path":"2026/05/30/dash-hls-video-downloader/","title":"DASH/HLS 流媒体视频下载脚本"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>DASH/HLS 流媒体视频下载脚本 | 石头门的选择</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">石头门的选择</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-books"><a href="/books/" rel="section"><i class="fa fa-book fa-fw"></i>books</a></li><li class="menu-item menu-item-movies"><a href="/movies/" rel="section"><i class="fa fa-video-camera fa-fw"></i>movies</a></li><li class="menu-item menu-item-games"><a href="/games/" rel="section"><i class="fa fa-gamepad fa-fw"></i>games</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90-MPD-%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-text">分析 MPD 文件结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%96%B9%E6%A1%88%E5%AF%B9%E6%AF%94"><span class="nav-text">下载方案对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E8%84%9A%E6%9C%AC"><span class="nav-text">最终脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-text">使用方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="nav-text">1. 安装依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%B8%8B%E8%BD%BD%E8%A7%86%E9%A2%91"><span class="nav-text">2. 下载视频</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%84%9A%E6%9C%AC%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-text">3. 脚本工作流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%84%E7%90%86-HLS-%E5%8A%A0%E5%AF%86%E6%B5%81"><span class="nav-text">处理 HLS 加密流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Keinz"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Keinz</p>
+  <div class="site-description" itemprop="description">如果把整个太平洋的水倒出，</br>也浇不熄我对你爱情的火。</br> 整个太平洋的水全部倒得出吗？</br> 不行。</br>所以我并不爱你。</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryKeinz" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryKeinz" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:kai_keinz@163.com" title="E-Mail → mailto:kai_keinz@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lostevangel.github.io/2026/05/30/dash-hls-video-downloader/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Keinz">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="石头门的选择">
+      <meta itemprop="description" content="如果把整个太平洋的水倒出，</br>也浇不熄我对你爱情的火。</br> 整个太平洋的水全部倒得出吗？</br> 不行。</br>所以我并不爱你。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="DASH&#x2F;HLS 流媒体视频下载脚本 | 石头门的选择">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DASH/HLS 流媒体视频下载脚本
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-30 20:30:00" itemprop="dateCreated datePublished" datetime="2026-05-30T20:30:00+08:00">2026-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>有时候在网上下载视频，拿到的不是直接的 MP4 文件，而是一个 <code>.dash+xml</code> 或 <code>.m3u8</code> 格式的流媒体清单文件。这类文件描述了视频的分段信息、音视频轨道、加密方式等，播放器根据清单文件去拉取真正的视频片断。</p>
+<p>常见的流媒体协议有两种：</p>
+<ul>
+<li><strong>DASH</strong>（Dynamic Adaptive Streaming over HTTP）：清单文件为 <code>.mpd</code> 或 <code>.dash+xml</code>，描述多个分辨率（144p ~ 4K）和音频轨道。</li>
+<li><strong>HLS</strong>（HTTP Live Streaming）：清单文件为 <code>.m3u8</code>，常用于直播和点播，可能带有 AES 加密。</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="分析-MPD-文件结构"><a href="#分析-MPD-文件结构" class="headerlink" title="分析 MPD 文件结构"></a>分析 MPD 文件结构</h2><p>一个典型的 DASH MPD 文件包含：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">MPD</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Period</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">AdaptationSet</span> <span class="attr">id</span>=<span class="string">&quot;1&quot;</span> <span class="attr">mimeType</span>=<span class="string">&quot;video/mp4&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Representation</span> <span class="attr">bandwidth</span>=<span class="string">&quot;959709&quot;</span> <span class="attr">height</span>=<span class="string">&quot;720&quot;</span> <span class="attr">width</span>=<span class="string">&quot;960&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">BaseURL</span>&gt;</span>?expires=...<span class="symbol">&amp;amp;</span>type=3<span class="symbol">&amp;amp;</span>sig=...<span class="tag">&lt;/<span class="name">BaseURL</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">SegmentBase</span> <span class="attr">indexRange</span>=<span class="string">&quot;911-6174&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">Initialization</span> <span class="attr">range</span>=<span class="string">&quot;0-910&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">SegmentBase</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">Representation</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">AdaptationSet</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Period</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">MPD</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>关键点：</p>
+<ul>
+<li><code>Representation</code> 标签包含 <code>height</code>（分辨率）和 <code>bandwidth</code>（码率）</li>
+<li>视频和音频在不同 <code>AdaptationSet</code> 中，需要分别下载再合并</li>
+<li>有些 CDN 使用 <code>SegmentBase</code>（单文件，通过字节范围索引），有些使用分段 TS&#x2F;MP4</li>
+</ul>
+<h2 id="下载方案对比"><a href="#下载方案对比" class="headerlink" title="下载方案对比"></a>下载方案对比</h2><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>yt-dlp</td>
+<td>自动解析、解密、合并，支持几乎所有格式</td>
+<td>需要安装</td>
+</tr>
+<tr>
+<td>ffmpeg</td>
+<td>系统级工具，可脚本化</td>
+<td>DASH 支持有限</td>
+</tr>
+<tr>
+<td>纯 Python + urllib</td>
+<td>零依赖，可控性强</td>
+<td>需要手动分段、解密、合并</td>
+</tr>
+</tbody></table>
+<p>最终选择 <strong>yt-dlp</strong> 作为核心下载引擎，Python 脚本做自动化编排。</p>
+<h2 id="最终脚本"><a href="#最终脚本" class="headerlink" title="最终脚本"></a>最终脚本</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">视频下载脚本 — 从目录的 .dash+xml 和 .txt 读取信息，下载最高分辨率视频</span></span><br><span class="line"><span class="string">用法: uv run python download_videos.py &lt;目录路径&gt;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">import</span> shutil</span><br><span class="line"><span class="keyword">import</span> xml.etree.ElementTree <span class="keyword">as</span> ET</span><br><span class="line"><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_max_height</span>(<span class="params">dash_files</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;从 .dash+xml 中解析最大视频高度&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> df <span class="keyword">in</span> dash_files:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            root = ET.fromstring(df.read_text(encoding=<span class="string">&quot;utf-8&quot;</span>, errors=<span class="string">&quot;replace&quot;</span>))</span><br><span class="line">            heights = [</span><br><span class="line">                <span class="built_in">int</span>(rep.get(<span class="string">&quot;height&quot;</span>))</span><br><span class="line">                <span class="keyword">for</span> rep <span class="keyword">in</span> root.<span class="built_in">iter</span>(<span class="string">&quot;&#123;urn:mpeg:dash:schema:mpd:2011&#125;Representation&quot;</span>)</span><br><span class="line">                <span class="keyword">if</span> rep.get(<span class="string">&quot;height&quot;</span>)</span><br><span class="line">            ]</span><br><span class="line">            <span class="keyword">if</span> heights:</span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">max</span>(heights)</span><br><span class="line">        <span class="keyword">except</span> Exception:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find_ytdlp</span>():</span><br><span class="line">    <span class="string">&quot;&quot;&quot;找 yt-dlp 可执行文件&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 优先使用项目 venv 中的 yt-dlp</span></span><br><span class="line">    known = Path(<span class="string">&quot;项目路径/.venv/Scripts/yt-dlp.exe&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> known.is_file():</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">str</span>(known)</span><br><span class="line">    <span class="keyword">return</span> shutil.which(<span class="string">&quot;yt-dlp&quot;</span>) <span class="keyword">or</span> <span class="string">&quot;yt-dlp&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">download</span>(<span class="params">url, output_path, label=<span class="string">&quot;video&quot;</span>, fmt=<span class="string">&quot;bestvideo+bestaudio/best&quot;</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;用 yt-dlp 下载视频并合并为 mp4&quot;&quot;&quot;</span></span><br><span class="line">    ytdlp = find_ytdlp()</span><br><span class="line">    out_dir = os.path.dirname(output_path) <span class="keyword">or</span> <span class="string">&quot;.&quot;</span></span><br><span class="line">    os.makedirs(out_dir, exist_ok=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    cmd = [</span><br><span class="line">        ytdlp,</span><br><span class="line">        <span class="string">&quot;--no-playlist&quot;</span>,</span><br><span class="line">        <span class="string">&quot;-f&quot;</span>, fmt,</span><br><span class="line">        <span class="string">&quot;--merge-output-format&quot;</span>, <span class="string">&quot;mp4&quot;</span>,</span><br><span class="line">        <span class="string">&quot;--no-mtime&quot;</span>,</span><br><span class="line">        <span class="string">&quot;-o&quot;</span>, output_path,</span><br><span class="line">        <span class="string">&quot;--no-part&quot;</span>,</span><br><span class="line">        url,</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[下载] <span class="subst">&#123;label&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[输出] <span class="subst">&#123;output_path&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    result = subprocess.run(cmd, capture_output=<span class="literal">True</span>, text=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> result.returncode != <span class="number">0</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[错误] 返回码: <span class="subst">&#123;result.returncode&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> (result.stderr <span class="keyword">or</span> <span class="string">&quot;&quot;</span>).split(<span class="string">&quot;\n&quot;</span>)[-<span class="number">10</span>:]:</span><br><span class="line">            line = line.strip()</span><br><span class="line">            <span class="keyword">if</span> line:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;  <span class="subst">&#123;line&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> (result.stdout <span class="keyword">or</span> <span class="string">&quot;&quot;</span>).split(<span class="string">&quot;\n&quot;</span>):</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">any</span>(kw <span class="keyword">in</span> line <span class="keyword">for</span> kw <span class="keyword">in</span> (<span class="string">&quot;Destination&quot;</span>, <span class="string">&quot;Merging&quot;</span>, <span class="string">&quot;100%&quot;</span>, <span class="string">&quot;already&quot;</span>)):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;  <span class="subst">&#123;line.strip()&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[完成] <span class="subst">&#123;label&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(sys.argv) &lt; <span class="number">2</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;用法: python download_videos.py &lt;目录路径1&gt; [目录路径2] ...&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> arg <span class="keyword">in</span> sys.argv[<span class="number">1</span>:]:</span><br><span class="line">        work_dir = Path(arg)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> work_dir.is_dir():</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;[错误] 目录不存在: <span class="subst">&#123;work_dir&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;\n<span class="subst">&#123;<span class="string">&#x27;=&#x27;</span>*<span class="number">60</span>&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;处理: <span class="subst">&#123;work_dir&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;<span class="string">&#x27;=&#x27;</span>*<span class="number">60</span>&#125;</span>&quot;</span>)</span><br><span class="line">        process_dir(work_dir)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">process_dir</span>(<span class="params">work_dir</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;处理单个目录：解析 .dash+xml 并下载视频&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 读取 .txt 获取 URL</span></span><br><span class="line">    txt_files = <span class="built_in">list</span>(work_dir.glob(<span class="string">&quot;*.txt&quot;</span>))</span><br><span class="line">    txt_files += <span class="built_in">list</span>(work_dir.glob(<span class="string">&quot;*.url&quot;</span>))</span><br><span class="line">    <span class="comment"># 读取 .dash+xml 文件获取分辨率信息</span></span><br><span class="line">    dash_files = <span class="built_in">list</span>(work_dir.glob(<span class="string">&quot;*.dash+xml&quot;</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> txt_files <span class="keyword">and</span> <span class="keyword">not</span> dash_files:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[跳过] 目录中没有 .txt 或 .dash+xml 文件: <span class="subst">&#123;work_dir&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    url = <span class="literal">None</span></span><br><span class="line">    label = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 从 .txt 中读取 URL</span></span><br><span class="line">    <span class="keyword">for</span> tf <span class="keyword">in</span> txt_files:</span><br><span class="line">        content = tf.read_text(encoding=<span class="string">&quot;utf-8&quot;</span>, errors=<span class="string">&quot;replace&quot;</span>).strip()</span><br><span class="line">        first_line = content.split(<span class="string">&quot;\n&quot;</span>)[<span class="number">0</span>].strip()</span><br><span class="line">        <span class="keyword">if</span> first_line.startswith((<span class="string">&quot;http://&quot;</span>, <span class="string">&quot;https://&quot;</span>)):</span><br><span class="line">            url = first_line</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="comment"># 如果是 HLS M3U8 内容</span></span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;#EXTM3U&quot;</span> <span class="keyword">in</span> content:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;[HLS] 发现 M3U8 内容&quot;</span>)</span><br><span class="line">            fixed = re.sub(</span><br><span class="line">                <span class="string">r&#x27;URI=&quot;(/[^&quot;]*)&quot;&#x27;</span>,</span><br><span class="line">                <span class="keyword">lambda</span> m: <span class="string">f&#x27;URI=&quot;https://example.com<span class="subst">&#123;m.group(<span class="number">1</span>)&#125;</span>&quot;&#x27;</span>,</span><br><span class="line">                content,</span><br><span class="line">            )</span><br><span class="line">            m3u8_path = work_dir / <span class="string">&quot;playlist.m3u8&quot;</span></span><br><span class="line">            m3u8_path.write_text(fixed, encoding=<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line">            url = <span class="built_in">str</span>(m3u8_path.resolve())</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> url <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[跳过] <span class="subst">&#123;work_dir&#125;</span> 中未找到 URL&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 从 .dash+xml 文件名取文章标题</span></span><br><span class="line">    <span class="keyword">for</span> df <span class="keyword">in</span> dash_files:</span><br><span class="line">        label = df.stem</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> label:</span><br><span class="line">        label = work_dir.name</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 解析最大分辨率</span></span><br><span class="line">    max_h = get_max_height(dash_files)</span><br><span class="line">    <span class="keyword">if</span> max_h:</span><br><span class="line">        fmt_selector = <span class="string">f&quot;bestvideo[height&lt;=<span class="subst">&#123;max_h&#125;</span>]+bestaudio/best[height&lt;=<span class="subst">&#123;max_h&#125;</span>]&quot;</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[分辨率] 最大: <span class="subst">&#123;max_h&#125;</span>p&quot;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        fmt_selector = <span class="string">&quot;bestvideo+bestaudio/best&quot;</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;[分辨率] 未检测到，使用最佳&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 跳过已下载的文件</span></span><br><span class="line">    existing = <span class="built_in">list</span>(work_dir.glob(<span class="string">&quot;*.mp4&quot;</span>))</span><br><span class="line">    <span class="keyword">if</span> existing:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[跳过] 已存在 mp4: <span class="subst">&#123;[f.name <span class="keyword">for</span> f <span class="keyword">in</span> existing]&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    suffix = <span class="string">f&quot;<span class="subst">&#123;max_h&#125;</span>p&quot;</span> <span class="keyword">if</span> max_h <span class="keyword">else</span> <span class="string">&quot;best&quot;</span></span><br><span class="line">    output_path = <span class="built_in">str</span>(work_dir / <span class="string">f&quot;<span class="subst">&#123;label&#125;</span>.<span class="subst">&#123;suffix&#125;</span>.mp4&quot;</span>)</span><br><span class="line">    download(url, output_path, label, fmt_selector)</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><h3 id="1-安装依赖"><a href="#1-安装依赖" class="headerlink" title="1. 安装依赖"></a>1. 安装依赖</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建虚拟环境并安装 yt-dlp</span></span><br><span class="line">uv venv</span><br><span class="line">uv pip install yt-dlp</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-下载视频"><a href="#2-下载视频" class="headerlink" title="2. 下载视频"></a>2. 下载视频</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 目录结构示例：</span></span><br><span class="line"><span class="comment"># 下载目录/</span></span><br><span class="line"><span class="comment"># ├── 1/</span></span><br><span class="line"><span class="comment"># │   ├── video.dash+xml      # DASH 清单</span></span><br><span class="line"><span class="comment"># │   └── url.txt             # 流媒体 URL</span></span><br><span class="line"><span class="comment"># └── 2/</span></span><br><span class="line"><span class="comment">#     ├── video.dash+xml</span></span><br><span class="line"><span class="comment">#     └── url.txt</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 单个目录</span></span><br><span class="line">python download_videos.py 下载目录/1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 多个目录顺序执行</span></span><br><span class="line">python download_videos.py 下载目录/1 下载目录/2 下载目录/3</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-脚本工作流程"><a href="#3-脚本工作流程" class="headerlink" title="3. 脚本工作流程"></a>3. 脚本工作流程</h3><ol>
+<li>扫描输入目录，读取 <code>.txt</code> 文件获取流媒体 URL</li>
+<li>解析 <code>.dash+xml</code> 文件，提取最高分辨率（如 720p、1080p）</li>
+<li>调用 yt-dlp 下载对应质量的视频轨道 + 最佳音频轨道</li>
+<li>自动合并为单一 MP4 文件</li>
+</ol>
+<h2 id="处理-HLS-加密流"><a href="#处理-HLS-加密流" class="headerlink" title="处理 HLS 加密流"></a>处理 HLS 加密流</h2><p>有些 HLS 流使用了 AES 加密，清单中会包含密钥信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#EXT-X-KEY:METHOD=AES-128,URI=&quot;/inc/enc.key&quot;,IV=0x...</span><br></pre></td></tr></table></figure>
+
+<p>脚本会自动将相对路径的 Key URL 补全为绝对路径，确保 yt-dlp 能正确解密。</p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
+<li><strong>URL 时效性</strong>：CDN 签名 URL 通常有时效（几小时到几天），过期后需重新获取</li>
+<li><strong>代理</strong>：如果网络环境需要代理，可在 yt-dlp 的代理配置中设置</li>
+<li><strong>文件名编码</strong>：Windows 下中文文件名可能出现乱码，脚本使用 UTF-8 编码处理</li>
+<li><strong>ffmpeg</strong>：yt-dlp 合并音视频依赖 ffmpeg，需要提前安装并加入 PATH</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://github.com/yt-dlp/yt-dlp">yt-dlp 官方文档</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP">DASH 标准</a></li>
+<li><a href="https://developer.apple.com/streaming/">HLS 协议</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"># Python</a>
+              <a href="/tags/%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD/" rel="tag"># 视频下载</a>
+              <a href="/tags/yt-dlp/" rel="tag"># yt-dlp</a>
+              <a href="/tags/DASH/" rel="tag"># DASH</a>
+              <a href="/tags/HLS/" rel="tag"># HLS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/28/deploy-shadowsocksr-vps/" rel="prev" title="VPS 部署 ShadowsocksR 实战">
+                  <i class="fa fa-angle-left"></i> VPS 部署 ShadowsocksR 实战
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/06/27/wechat-editor-css-compatibility/" rel="next" title="我们做了一个公众号排版 Skill">
+                  我们做了一个公众号排版 Skill <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="lv-container" data-id="city" data-uid="MTAyMC8zMTk1OC84NTIy"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cherry</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">NaNm</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">NaN:aN</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script src="/js/third-party/comments/livere.js" defer></script>
+<script>
+// Title trick - 页面标题切换效果
+var OriginTitile = document.title;
+var titleTime;
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    document.title = '啊咧?真由氏的怀表停了呢~' + OriginTitile;
+    clearTimeout(titleTime);
+  } else {
+    document.title = '这一切都是命运石之门的选择！' + OriginTitile;
+    titleTime = setTimeout(function() {
+      document.title = OriginTitile;
+    }, 2000);
+  }
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+
+<!-- live2d 看板娘 -->
+<script src="https://soyawww.github.io/live2d/autoload.js"></script>
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
+
+</body>
+</html>

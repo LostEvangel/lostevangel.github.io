@@ -3220,4 +3220,352 @@
         <tag>ChatGPT</tag>
       </tags>
   </entry>
+  <entry>
+    <title>DASH/HLS 流媒体视频下载脚本</title>
+    <url>/2026/05/30/dash-hls-video-downloader/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>有时候在网上下载视频，拿到的不是直接的 MP4 文件，而是一个 <code>.dash+xml</code> 或 <code>.m3u8</code> 格式的流媒体清单文件。这类文件描述了视频的分段信息、音视频轨道、加密方式等，播放器根据清单文件去拉取真正的视频片断。</p>
+<p>常见的流媒体协议有两种：</p>
+<ul>
+<li><strong>DASH</strong>（Dynamic Adaptive Streaming over HTTP）：清单文件为 <code>.mpd</code> 或 <code>.dash+xml</code>，描述多个分辨率（144p ~ 4K）和音频轨道。</li>
+<li><strong>HLS</strong>（HTTP Live Streaming）：清单文件为 <code>.m3u8</code>，常用于直播和点播，可能带有 AES 加密。</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="分析-MPD-文件结构"><a href="#分析-MPD-文件结构" class="headerlink" title="分析 MPD 文件结构"></a>分析 MPD 文件结构</h2><p>一个典型的 DASH MPD 文件包含：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">MPD</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Period</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">AdaptationSet</span> <span class="attr">id</span>=<span class="string">&quot;1&quot;</span> <span class="attr">mimeType</span>=<span class="string">&quot;video/mp4&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Representation</span> <span class="attr">bandwidth</span>=<span class="string">&quot;959709&quot;</span> <span class="attr">height</span>=<span class="string">&quot;720&quot;</span> <span class="attr">width</span>=<span class="string">&quot;960&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">BaseURL</span>&gt;</span>?expires=...<span class="symbol">&amp;amp;</span>type=3<span class="symbol">&amp;amp;</span>sig=...<span class="tag">&lt;/<span class="name">BaseURL</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">SegmentBase</span> <span class="attr">indexRange</span>=<span class="string">&quot;911-6174&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">Initialization</span> <span class="attr">range</span>=<span class="string">&quot;0-910&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">SegmentBase</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">Representation</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">AdaptationSet</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Period</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">MPD</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>关键点：</p>
+<ul>
+<li><code>Representation</code> 标签包含 <code>height</code>（分辨率）和 <code>bandwidth</code>（码率）</li>
+<li>视频和音频在不同 <code>AdaptationSet</code> 中，需要分别下载再合并</li>
+<li>有些 CDN 使用 <code>SegmentBase</code>（单文件，通过字节范围索引），有些使用分段 TS&#x2F;MP4</li>
+</ul>
+<h2 id="下载方案对比"><a href="#下载方案对比" class="headerlink" title="下载方案对比"></a>下载方案对比</h2><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>yt-dlp</td>
+<td>自动解析、解密、合并，支持几乎所有格式</td>
+<td>需要安装</td>
+</tr>
+<tr>
+<td>ffmpeg</td>
+<td>系统级工具，可脚本化</td>
+<td>DASH 支持有限</td>
+</tr>
+<tr>
+<td>纯 Python + urllib</td>
+<td>零依赖，可控性强</td>
+<td>需要手动分段、解密、合并</td>
+</tr>
+</tbody></table>
+<p>最终选择 <strong>yt-dlp</strong> 作为核心下载引擎，Python 脚本做自动化编排。</p>
+<h2 id="最终脚本"><a href="#最终脚本" class="headerlink" title="最终脚本"></a>最终脚本</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">视频下载脚本 — 从目录的 .dash+xml 和 .txt 读取信息，下载最高分辨率视频</span></span><br><span class="line"><span class="string">用法: uv run python download_videos.py &lt;目录路径&gt;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">import</span> shutil</span><br><span class="line"><span class="keyword">import</span> xml.etree.ElementTree <span class="keyword">as</span> ET</span><br><span class="line"><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_max_height</span>(<span class="params">dash_files</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;从 .dash+xml 中解析最大视频高度&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> df <span class="keyword">in</span> dash_files:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            root = ET.fromstring(df.read_text(encoding=<span class="string">&quot;utf-8&quot;</span>, errors=<span class="string">&quot;replace&quot;</span>))</span><br><span class="line">            heights = [</span><br><span class="line">                <span class="built_in">int</span>(rep.get(<span class="string">&quot;height&quot;</span>))</span><br><span class="line">                <span class="keyword">for</span> rep <span class="keyword">in</span> root.<span class="built_in">iter</span>(<span class="string">&quot;&#123;urn:mpeg:dash:schema:mpd:2011&#125;Representation&quot;</span>)</span><br><span class="line">                <span class="keyword">if</span> rep.get(<span class="string">&quot;height&quot;</span>)</span><br><span class="line">            ]</span><br><span class="line">            <span class="keyword">if</span> heights:</span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">max</span>(heights)</span><br><span class="line">        <span class="keyword">except</span> Exception:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find_ytdlp</span>():</span><br><span class="line">    <span class="string">&quot;&quot;&quot;找 yt-dlp 可执行文件&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 优先使用项目 venv 中的 yt-dlp</span></span><br><span class="line">    known = Path(<span class="string">&quot;项目路径/.venv/Scripts/yt-dlp.exe&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> known.is_file():</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">str</span>(known)</span><br><span class="line">    <span class="keyword">return</span> shutil.which(<span class="string">&quot;yt-dlp&quot;</span>) <span class="keyword">or</span> <span class="string">&quot;yt-dlp&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">download</span>(<span class="params">url, output_path, label=<span class="string">&quot;video&quot;</span>, fmt=<span class="string">&quot;bestvideo+bestaudio/best&quot;</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;用 yt-dlp 下载视频并合并为 mp4&quot;&quot;&quot;</span></span><br><span class="line">    ytdlp = find_ytdlp()</span><br><span class="line">    out_dir = os.path.dirname(output_path) <span class="keyword">or</span> <span class="string">&quot;.&quot;</span></span><br><span class="line">    os.makedirs(out_dir, exist_ok=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    cmd = [</span><br><span class="line">        ytdlp,</span><br><span class="line">        <span class="string">&quot;--no-playlist&quot;</span>,</span><br><span class="line">        <span class="string">&quot;-f&quot;</span>, fmt,</span><br><span class="line">        <span class="string">&quot;--merge-output-format&quot;</span>, <span class="string">&quot;mp4&quot;</span>,</span><br><span class="line">        <span class="string">&quot;--no-mtime&quot;</span>,</span><br><span class="line">        <span class="string">&quot;-o&quot;</span>, output_path,</span><br><span class="line">        <span class="string">&quot;--no-part&quot;</span>,</span><br><span class="line">        url,</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[下载] <span class="subst">&#123;label&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[输出] <span class="subst">&#123;output_path&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    result = subprocess.run(cmd, capture_output=<span class="literal">True</span>, text=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> result.returncode != <span class="number">0</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[错误] 返回码: <span class="subst">&#123;result.returncode&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> (result.stderr <span class="keyword">or</span> <span class="string">&quot;&quot;</span>).split(<span class="string">&quot;\n&quot;</span>)[-<span class="number">10</span>:]:</span><br><span class="line">            line = line.strip()</span><br><span class="line">            <span class="keyword">if</span> line:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;  <span class="subst">&#123;line&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> (result.stdout <span class="keyword">or</span> <span class="string">&quot;&quot;</span>).split(<span class="string">&quot;\n&quot;</span>):</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">any</span>(kw <span class="keyword">in</span> line <span class="keyword">for</span> kw <span class="keyword">in</span> (<span class="string">&quot;Destination&quot;</span>, <span class="string">&quot;Merging&quot;</span>, <span class="string">&quot;100%&quot;</span>, <span class="string">&quot;already&quot;</span>)):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;  <span class="subst">&#123;line.strip()&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[完成] <span class="subst">&#123;label&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(sys.argv) &lt; <span class="number">2</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;用法: python download_videos.py &lt;目录路径1&gt; [目录路径2] ...&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> arg <span class="keyword">in</span> sys.argv[<span class="number">1</span>:]:</span><br><span class="line">        work_dir = Path(arg)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> work_dir.is_dir():</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;[错误] 目录不存在: <span class="subst">&#123;work_dir&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;\n<span class="subst">&#123;<span class="string">&#x27;=&#x27;</span>*<span class="number">60</span>&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;处理: <span class="subst">&#123;work_dir&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;<span class="string">&#x27;=&#x27;</span>*<span class="number">60</span>&#125;</span>&quot;</span>)</span><br><span class="line">        process_dir(work_dir)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">process_dir</span>(<span class="params">work_dir</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;处理单个目录：解析 .dash+xml 并下载视频&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 读取 .txt 获取 URL</span></span><br><span class="line">    txt_files = <span class="built_in">list</span>(work_dir.glob(<span class="string">&quot;*.txt&quot;</span>))</span><br><span class="line">    txt_files += <span class="built_in">list</span>(work_dir.glob(<span class="string">&quot;*.url&quot;</span>))</span><br><span class="line">    <span class="comment"># 读取 .dash+xml 文件获取分辨率信息</span></span><br><span class="line">    dash_files = <span class="built_in">list</span>(work_dir.glob(<span class="string">&quot;*.dash+xml&quot;</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> txt_files <span class="keyword">and</span> <span class="keyword">not</span> dash_files:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[跳过] 目录中没有 .txt 或 .dash+xml 文件: <span class="subst">&#123;work_dir&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    url = <span class="literal">None</span></span><br><span class="line">    label = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 从 .txt 中读取 URL</span></span><br><span class="line">    <span class="keyword">for</span> tf <span class="keyword">in</span> txt_files:</span><br><span class="line">        content = tf.read_text(encoding=<span class="string">&quot;utf-8&quot;</span>, errors=<span class="string">&quot;replace&quot;</span>).strip()</span><br><span class="line">        first_line = content.split(<span class="string">&quot;\n&quot;</span>)[<span class="number">0</span>].strip()</span><br><span class="line">        <span class="keyword">if</span> first_line.startswith((<span class="string">&quot;http://&quot;</span>, <span class="string">&quot;https://&quot;</span>)):</span><br><span class="line">            url = first_line</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="comment"># 如果是 HLS M3U8 内容</span></span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;#EXTM3U&quot;</span> <span class="keyword">in</span> content:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;[HLS] 发现 M3U8 内容&quot;</span>)</span><br><span class="line">            fixed = re.sub(</span><br><span class="line">                <span class="string">r&#x27;URI=&quot;(/[^&quot;]*)&quot;&#x27;</span>,</span><br><span class="line">                <span class="keyword">lambda</span> m: <span class="string">f&#x27;URI=&quot;https://example.com<span class="subst">&#123;m.group(<span class="number">1</span>)&#125;</span>&quot;&#x27;</span>,</span><br><span class="line">                content,</span><br><span class="line">            )</span><br><span class="line">            m3u8_path = work_dir / <span class="string">&quot;playlist.m3u8&quot;</span></span><br><span class="line">            m3u8_path.write_text(fixed, encoding=<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line">            url = <span class="built_in">str</span>(m3u8_path.resolve())</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> url <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[跳过] <span class="subst">&#123;work_dir&#125;</span> 中未找到 URL&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 从 .dash+xml 文件名取文章标题</span></span><br><span class="line">    <span class="keyword">for</span> df <span class="keyword">in</span> dash_files:</span><br><span class="line">        label = df.stem</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> label:</span><br><span class="line">        label = work_dir.name</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 解析最大分辨率</span></span><br><span class="line">    max_h = get_max_height(dash_files)</span><br><span class="line">    <span class="keyword">if</span> max_h:</span><br><span class="line">        fmt_selector = <span class="string">f&quot;bestvideo[height&lt;=<span class="subst">&#123;max_h&#125;</span>]+bestaudio/best[height&lt;=<span class="subst">&#123;max_h&#125;</span>]&quot;</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[分辨率] 最大: <span class="subst">&#123;max_h&#125;</span>p&quot;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        fmt_selector = <span class="string">&quot;bestvideo+bestaudio/best&quot;</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;[分辨率] 未检测到，使用最佳&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 跳过已下载的文件</span></span><br><span class="line">    existing = <span class="built_in">list</span>(work_dir.glob(<span class="string">&quot;*.mp4&quot;</span>))</span><br><span class="line">    <span class="keyword">if</span> existing:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[跳过] 已存在 mp4: <span class="subst">&#123;[f.name <span class="keyword">for</span> f <span class="keyword">in</span> existing]&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    suffix = <span class="string">f&quot;<span class="subst">&#123;max_h&#125;</span>p&quot;</span> <span class="keyword">if</span> max_h <span class="keyword">else</span> <span class="string">&quot;best&quot;</span></span><br><span class="line">    output_path = <span class="built_in">str</span>(work_dir / <span class="string">f&quot;<span class="subst">&#123;label&#125;</span>.<span class="subst">&#123;suffix&#125;</span>.mp4&quot;</span>)</span><br><span class="line">    download(url, output_path, label, fmt_selector)</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><h3 id="1-安装依赖"><a href="#1-安装依赖" class="headerlink" title="1. 安装依赖"></a>1. 安装依赖</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 创建虚拟环境并安装 yt-dlp</span></span><br><span class="line">uv venv</span><br><span class="line">uv pip install yt-dlp</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-下载视频"><a href="#2-下载视频" class="headerlink" title="2. 下载视频"></a>2. 下载视频</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 目录结构示例：</span></span><br><span class="line"><span class="comment"># 下载目录/</span></span><br><span class="line"><span class="comment"># ├── 1/</span></span><br><span class="line"><span class="comment"># │   ├── video.dash+xml      # DASH 清单</span></span><br><span class="line"><span class="comment"># │   └── url.txt             # 流媒体 URL</span></span><br><span class="line"><span class="comment"># └── 2/</span></span><br><span class="line"><span class="comment">#     ├── video.dash+xml</span></span><br><span class="line"><span class="comment">#     └── url.txt</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 单个目录</span></span><br><span class="line">python download_videos.py 下载目录/1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 多个目录顺序执行</span></span><br><span class="line">python download_videos.py 下载目录/1 下载目录/2 下载目录/3</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-脚本工作流程"><a href="#3-脚本工作流程" class="headerlink" title="3. 脚本工作流程"></a>3. 脚本工作流程</h3><ol>
+<li>扫描输入目录，读取 <code>.txt</code> 文件获取流媒体 URL</li>
+<li>解析 <code>.dash+xml</code> 文件，提取最高分辨率（如 720p、1080p）</li>
+<li>调用 yt-dlp 下载对应质量的视频轨道 + 最佳音频轨道</li>
+<li>自动合并为单一 MP4 文件</li>
+</ol>
+<h2 id="处理-HLS-加密流"><a href="#处理-HLS-加密流" class="headerlink" title="处理 HLS 加密流"></a>处理 HLS 加密流</h2><p>有些 HLS 流使用了 AES 加密，清单中会包含密钥信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#EXT-X-KEY:METHOD=AES-128,URI=&quot;/inc/enc.key&quot;,IV=0x...</span><br></pre></td></tr></table></figure>
+
+<p>脚本会自动将相对路径的 Key URL 补全为绝对路径，确保 yt-dlp 能正确解密。</p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
+<li><strong>URL 时效性</strong>：CDN 签名 URL 通常有时效（几小时到几天），过期后需重新获取</li>
+<li><strong>代理</strong>：如果网络环境需要代理，可在 yt-dlp 的代理配置中设置</li>
+<li><strong>文件名编码</strong>：Windows 下中文文件名可能出现乱码，脚本使用 UTF-8 编码处理</li>
+<li><strong>ffmpeg</strong>：yt-dlp 合并音视频依赖 ffmpeg，需要提前安装并加入 PATH</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://github.com/yt-dlp/yt-dlp">yt-dlp 官方文档</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP">DASH 标准</a></li>
+<li><a href="https://developer.apple.com/streaming/">HLS 协议</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>视频下载</tag>
+        <tag>yt-dlp</tag>
+        <tag>DASH</tag>
+        <tag>HLS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>VPS 部署 ShadowsocksR 实战</title>
+    <url>/2026/05/28/deploy-shadowsocksr-vps/</url>
+    <content><![CDATA[<p>最近入手了一台 VPS，记录一下部署 SSR（ShadowsocksR）的完整过程，方便以后复盘。</p>
+<span id="more"></span>
+
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>VPS 信息：</p>
+<ul>
+<li>OS：CentOS 9 (AlmaLinux 9)</li>
+<li>IP：自行购买</li>
+<li>账户：root</li>
+</ul>
+<h2 id="1-连接服务器"><a href="#1-连接服务器" class="headerlink" title="1. 连接服务器"></a>1. 连接服务器</h2><p>通过 SSH 连接到 VPS：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh root@&lt;your-server-ip&gt;</span><br></pre></td></tr></table></figure>
+
+<p>SSH 连接后输入密码即可登录。</p>
+<h2 id="2-安装-Git"><a href="#2-安装-Git" class="headerlink" title="2. 安装 Git"></a>2. 安装 Git</h2><p>SSR 代码托管在 GitHub，需要先安装 git：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install -y git</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-克隆-SSR-项目"><a href="#3-克隆-SSR-项目" class="headerlink" title="3. 克隆 SSR 项目"></a>3. 克隆 SSR 项目</h2><p>SSR 的 manyuser 分支是目前广泛使用的版本，功能稳定，克隆到 <code>/home/work</code> 目录：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /home/work</span><br><span class="line"><span class="built_in">cd</span> /home/work</span><br><span class="line">git <span class="built_in">clone</span> -b manyuser https://github.com/LostEvangel/shadowsocksr.git</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-初始化配置"><a href="#4-初始化配置" class="headerlink" title="4. 初始化配置"></a>4. 初始化配置</h2><p>进入项目目录，运行初始化脚本生成配置文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /home/work/shadowsocksr</span><br><span class="line">bash initcfg.sh</span><br></pre></td></tr></table></figure>
+
+<p>执行后会在当前目录生成 <code>user-config.json</code>，这是单用户模式的核心配置文件。</p>
+<h2 id="5-修改配置"><a href="#5-修改配置" class="headerlink" title="5. 修改配置"></a>5. 修改配置</h2><p>编辑 <code>user-config.json</code>，填入服务器参数：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;server&quot;</span><span class="punctuation">:</span> <span class="string">&quot;0.0.0.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;server_port&quot;</span><span class="punctuation">:</span> <span class="number">8888</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;your-password&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;method&quot;</span><span class="punctuation">:</span> <span class="string">&quot;aes-256-cfb&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;protocol&quot;</span><span class="punctuation">:</span> <span class="string">&quot;auth_aes128_md5&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;obfs&quot;</span><span class="punctuation">:</span> <span class="string">&quot;tls1.2_ticket_auth&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;timeout&quot;</span><span class="punctuation">:</span> <span class="number">120</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;fast_open&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>server_port</code></td>
+<td>SSR 监听端口</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td>连接密码</td>
+</tr>
+<tr>
+<td><code>method</code></td>
+<td>加密方式，推荐 aes-256-cfb</td>
+</tr>
+<tr>
+<td><code>protocol</code></td>
+<td>协议插件，auth_aes128_md5 兼容性好</td>
+</tr>
+<tr>
+<td><code>obfs</code></td>
+<td>混淆插件，tls1.2_ticket_auth 伪装 TLS</td>
+</tr>
+</tbody></table>
+<h2 id="6-启动-SSR"><a href="#6-启动-SSR" class="headerlink" title="6. 启动 SSR"></a>6. 启动 SSR</h2><p>进入 <code>shadowsocks/</code> 子目录，使用单用户模式启动（读取父目录的 <code>user-config.json</code>）：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /home/work/shadowsocksr/shadowsocks</span><br><span class="line"><span class="built_in">nohup</span> python server.py &gt;&gt; /home/work/shadowsocksr/ssserver.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+
+<p>验证是否启动成功：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ss -lntp | grep python</span><br></pre></td></tr></table></figure>
+
+<p>看到 <code>LISTEN 0 1024 *:8888 *:*</code> 即表示运行中。</p>
+<h2 id="7-防火墙配置"><a href="#7-防火墙配置" class="headerlink" title="7. 防火墙配置"></a>7. 防火墙配置</h2><p>如果系统开启了 firewalld，需要放行端口：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=8888/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>某些 VPS 厂商（如海外 VPS）默认不开启防火墙，可跳过此步。</p>
+<h2 id="客户端配置"><a href="#客户端配置" class="headerlink" title="客户端配置"></a>客户端配置</h2><p>下载对应平台的 SSR 客户端，填入以下参数即可连接：</p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>服务器地址</td>
+<td>你的 VPS IP</td>
+</tr>
+<tr>
+<td>端口</td>
+<td>8888</td>
+</tr>
+<tr>
+<td>密码</td>
+<td>你设定的密码</td>
+</tr>
+<tr>
+<td>加密</td>
+<td>aes-256-cfb</td>
+</tr>
+<tr>
+<td>协议</td>
+<td>auth_aes128_md5</td>
+</tr>
+<tr>
+<td>混淆</td>
+<td>tls1.2_ticket_auth</td>
+</tr>
+</tbody></table>
+<h2 id="常用管理命令"><a href="#常用管理命令" class="headerlink" title="常用管理命令"></a>常用管理命令</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看日志</span></span><br><span class="line"><span class="built_in">tail</span> -f /home/work/shadowsocksr/ssserver.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止 SSR</span></span><br><span class="line">pkill -f server.py</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动 SSR</span></span><br><span class="line"><span class="built_in">cd</span> /home/work/shadowsocksr/shadowsocks</span><br><span class="line"><span class="built_in">nohup</span> python server.py &gt;&gt; /home/work/shadowsocksr/ssserver.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
+<li><strong><code>cymysql</code> 报错</strong>：日志中出现 <code>ModuleNotFoundError: No module named &#39;cymysql&#39;</code> 是正常的，这是多用户数据库模式才需要的依赖，单用户模式不会影响使用</li>
+<li><strong>外网扫描</strong>：VPS 上线后会遇到大量外网扫描流量，日志中出现 <code>unsupported addrtype</code> 是扫描器在试探，忽略即可</li>
+<li><strong>Python 版本</strong>：CentOS 9 自带 Python 3.9，SSR 原生兼容无需额外配置</li>
+<li><strong>混淆选择</strong>：<code>tls1.2_ticket_auth</code> 是精确匹配模式，如果客户端不支持可选 <code>tls1.2_ticket_auth_compatible</code> 提高兼容性</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>ShadowSocks</tag>
+        <tag>SSR</tag>
+        <tag>Linux</tag>
+        <tag>VPS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>我们做了一个公众号排版 Skill</title>
+    <url>/2026/06/27/wechat-editor-css-compatibility/</url>
+    <content><![CDATA[<h1 id="我们做了一个公众号排版-Skill"><a href="#我们做了一个公众号排版-Skill" class="headerlink" title="我们做了一个公众号排版 Skill"></a>我们做了一个公众号排版 Skill</h1><h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>我习惯用 Markdown 写稿，写到公众号上就需要转成好看的 HTML。市面上有不少排版工具，但每次都要手动复制粘贴、调整样式，流程割裂。</p>
+<p>正好 Claude Code 有 Skill 机制——可以自定义一套自动化工作流，用自然语言触发。于是想：能不能做一个排版 Skill，一句话就把文章排好？</p>
+<p>成品就是 <code>/wechat-article-beautify</code>。</p>
+<hr>
+<h2 id="Skill-设计：四套主题"><a href="#Skill-设计：四套主题" class="headerlink" title="Skill 设计：四套主题"></a>Skill 设计：四套主题</h2><p>排版的核心是风格。我们设计了一套主题样式库，每套都有完整的配色和排版规范：</p>
+<table>
+<thead>
+<tr>
+<th>主题</th>
+<th>配色基调</th>
+<th>适合</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🍃 <strong>极简清风</strong></td>
+<td>白底灰字，深蓝标题</td>
+<td>通用文章，最保险</td>
+</tr>
+<tr>
+<td>📖 <strong>书香典雅</strong></td>
+<td>米白底，棕褐标题</td>
+<td>人文随笔、书评</td>
+</tr>
+<tr>
+<td>🌸 <strong>温暖杂志</strong></td>
+<td>暖橙粉紫，圆角卡片</td>
+<td>生活分享、情感</td>
+</tr>
+<tr>
+<td>💻 <strong>技术格调</strong></td>
+<td>深色代码块，硬朗</td>
+<td>技术教程</td>
+</tr>
+</tbody></table>
+<p>以我最常用的 <strong>书香典雅</strong> 为例，它的核心设定是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">背景: 米白 (#FDFBF7)        标题: 棕褐 (#8B4513)</span><br><span class="line">正文: 深灰 (#3D3D3D)        引用: 暖色左边框 + 浅暖底</span><br><span class="line">间距: 行高 1.75，段距 20px</span><br><span class="line">装饰: ❦ 花式分隔符，首字下沉</span><br></pre></td></tr></table></figure>
+
+<p>每套主题都包含完整的样式规则：标题层级、引用块、代码块、列表、分隔线、图片，覆盖一篇公众号文章可能用到的所有元素。</p>
+<hr>
+<h2 id="工作流：五步走"><a href="#工作流：五步走" class="headerlink" title="工作流：五步走"></a>工作流：五步走</h2><p>Skill 的工作流程设计为五个阶段，用户只需要提供内容和选择主题，剩下的自动完成：</p>
+<p><strong>Step 1 — 选主题</strong>：列出四套风格让用户挑，或直接指定</p>
+<p><strong>Step 2 — 分析结构</strong>：识别 Markdown 中的标题层级、引用、列表、代码块、加粗强调</p>
+<p><strong>Step 3 — 生成 HTML</strong>：按主题规范输出全部内联样式的 HTML 文件。这步最核心——要处理标题的装饰线、引用块的左边框和背景色、分隔符的样式、列表的缩进等等</p>
+<p><strong>Step 4 — 输出结果</strong>：告诉用户字数、阅读时间，附 HTML 文件路径和使用说明</p>
+<p><strong>Step 5 — 可选润色</strong>：如果用户需要，帮忙优化内容表达</p>
+<p>流程不复杂，但 Step 3 踩了大坑。</p>
+<hr>
+<h2 id="最大的坑：微信编辑器不认-CSS"><a href="#最大的坑：微信编辑器不认-CSS" class="headerlink" title="最大的坑：微信编辑器不认 CSS"></a>最大的坑：微信编辑器不认 CSS</h2><p>HTML 生成后在浏览器里打开，效果很好。但一旦全选复制、粘贴到微信公众号编辑器，样式就大面积阵亡。</p>
+<p>一轮轮测试下来，我们摸清了微信的”脾气”：</p>
+<h3 id="微信不认的"><a href="#微信不认的" class="headerlink" title="微信不认的"></a>微信不认的</h3><ul>
+<li><strong>整体背景色</strong>：微信强制白色，无解</li>
+<li><strong>CSS <code>border</code> 系列</strong>：<code>border-left</code>、<code>border-top</code> 等全部过滤</li>
+<li><strong><code>bgcolor</code> 属性</strong>：HTML 背景色属性一样过滤</li>
+<li><strong><code>letter-spacing</code></strong>：字间距不保留</li>
+<li><strong>块级元素字号</strong>：<code>&lt;div&gt;</code> 上的 <code>font-size</code> 不生效</li>
+<li><strong><code>font-weight</code></strong>：必须用 <code>&lt;b&gt;</code> 标签</li>
+<li><strong><code>float</code> &#x2F; <code>position</code> &#x2F; <code>border-radius</code></strong>：布局和圆角属性全删</li>
+</ul>
+<h3 id="微信认的写法"><a href="#微信认的写法" class="headerlink" title="微信认的写法"></a>微信认的写法</h3><table>
+<thead>
+<tr>
+<th>效果</th>
+<th>正确写法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文字颜色</td>
+<td><code>&lt;font color=&quot;#xxx&quot;&gt;</code>（不是 CSS <code>color</code>）</td>
+</tr>
+<tr>
+<td>加粗</td>
+<td><code>&lt;b&gt;</code> 或 <code>&lt;strong&gt;</code></td>
+</tr>
+<tr>
+<td>居中</td>
+<td><code>&lt;center&gt;</code> 标签</td>
+</tr>
+<tr>
+<td>横线</td>
+<td><code>&lt;hr style=&quot;border: none; border-top: 1px solid #ccc;&quot;&gt;</code></td>
+</tr>
+<tr>
+<td>标题</td>
+<td><code>&lt;h1&gt;</code> ~ <code>&lt;h6&gt;</code> 语义标签</td>
+</tr>
+<tr>
+<td>行高</td>
+<td><code>&lt;p&gt;</code> 上写 <code>line-height</code></td>
+</tr>
+<tr>
+<td>缩进</td>
+<td><code>text-indent: 2em</code></td>
+</tr>
+</tbody></table>
+<p>核心经验就一句话：<strong>能用 HTML 标签解决的问题，就不要用 CSS。</strong></p>
+<hr>
+<h2 id="踩坑实例：左边框装饰条"><a href="#踩坑实例：左边框装饰条" class="headerlink" title="踩坑实例：左边框装饰条"></a>踩坑实例：左边框装饰条</h2><p>小标题前的棕色竖条是我们最纠结的一个细节。</p>
+<p>最初的方案是用 <code>border-left: 4px solid</code>，浏览器里很优雅。微信过滤后光秃秃的。</p>
+<p>尝试用 Unicode 字符 <code>▎</code>（LEFT ONE QUARTER BLOCK）加上颜色——微信不渲染这个字符，直接消失。</p>
+<p>换成 <code>‖</code>（双竖线）——渲染了，但视觉上不如实心色块。</p>
+<p>最终结论：这种纯 CSS 装饰在微信里确实留不住，要么接受降级，要么用字符近似替代。我们选择了前者——在 Skill 的主题设计时就主动放弃依赖 <code>border</code> 的装饰方案。</p>
+<hr>
+<h2 id="沉淀到-Skill-里"><a href="#沉淀到-Skill-里" class="headerlink" title="沉淀到 Skill 里"></a>沉淀到 Skill 里</h2><p>经过这轮实战，我们对 Skill 做了几项关键更新：</p>
+<ol>
+<li><strong>内置兼容性清单</strong>：生成 HTML 时自动规避被微信过滤的写法，优先使用标签方案</li>
+<li><strong>字号策略调整</strong>：正文 15px 替代 16px，小标题 17px 替代 19px，更贴近微信实际渲染效果</li>
+<li><strong>降级设计</strong>：主题设计时主动放弃注定丢失的样式（整体背景色、边框装饰、圆角），保住阅读体验核心</li>
+<li><strong>预期管理</strong>：输出时主动告知用户”浏览器预览 ≠ 微信效果”</li>
+</ol>
+<hr>
+<h2 id="未来规划"><a href="#未来规划" class="headerlink" title="未来规划"></a>未来规划</h2><p>Skill 目前能完成基础的排版工作，但还有两个方向可以做得更深：</p>
+<h3 id="1-排版再优化"><a href="#1-排版再优化" class="headerlink" title="1. 排版再优化"></a>1. 排版再优化</h3><p>当前排版依赖预定义的主题模板，后续可以探索更灵活的方式：</p>
+<ul>
+<li><strong>精细化控制</strong>：允许用户微调单个参数（字号、间距、配色），而不是只能选整套主题</li>
+<li><strong>更多主题</strong>：增加新的风格，比如适合诗歌的留白极简风、适合影评的胶片色调</li>
+<li><strong>WeChat 降级策略自动化</strong>：在生成 HTML 时自动检测并替换被微信过滤的写法，减少手工调整</li>
+<li><strong>移动端预览</strong>：生成时附带移动端预览截图，减少”浏览器 ≠ 微信”的预期落差</li>
+</ul>
+<h3 id="2-文案优化"><a href="#2-文案优化" class="headerlink" title="2. 文案优化"></a>2. 文案优化</h3><p>排版之外，写作本身也有优化的空间：</p>
+<ul>
+<li><strong>风格化润色</strong>：用户写完草稿后，Skill 可以根据文章类型（技术&#x2F;随笔&#x2F;书评）自动调整语气和措辞</li>
+<li><strong>长段落切分</strong>：识别过长的段落，拆分为更适合手机阅读的短段</li>
+<li><strong>节奏感优化</strong>：分析句长分布，建议在需要停顿的地方插入分隔或小节标题</li>
+<li><strong>多风格适配</strong>：同一篇内容可以按”正式版”和”口语版”分别输出，适配不同发布渠道</li>
+</ul>
+<p>这两个方向一个偏”形式”，一个偏”内容”，我们希望 Skill 最终能兼顾两者——不仅让文章好看，也让文章好读。</p>
+<hr>
+<h2 id="收获"><a href="#收获" class="headerlink" title="收获"></a>收获</h2><p>这次做 Skill 最大的收获不是那张兼容性清单，而是一个认知：</p>
+<p><strong>公众号排版是一个降级过程，不是升级过程。</strong></p>
+<p>Markdown → 精美 HTML 是”设计态”，HTML → 微信编辑器是”运行态”。从设计态到运行态，注定要打折扣。Skill 要做的不是对抗这种降级，而是在设计时就预判哪些能保、哪些该放，用最小的代价保住阅读体验的核心。</p>
+<p>如果你也在折腾公众号排版，希望这份记录对你有帮助。</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Claude</tag>
+      </tags>
+  </entry>
 </search>
